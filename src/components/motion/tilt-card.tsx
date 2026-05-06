@@ -16,19 +16,23 @@ export function TiltCard({
 }: TiltCardProps) {
 	const ref = useRef<HTMLElement>(null);
 	const reducedMotion = useReducedMotionPreference();
-	const [visible, setVisible] = useState(false);
+	const [frameOpen, setFrameOpen] = useState(false);
+	const [contentOpen, setContentOpen] = useState(false);
 
 	useEffect(() => {
 		const node = ref.current;
 		if (!node || reducedMotion) {
-			setVisible(true);
+			setFrameOpen(true);
+			setContentOpen(true);
 			return;
 		}
 
+		let contentTimer: number | undefined;
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				if (entry.isIntersecting) {
-					setVisible(true);
+					setFrameOpen(true);
+					contentTimer = window.setTimeout(() => setContentOpen(true), 210);
 					observer.disconnect();
 				}
 			},
@@ -36,7 +40,10 @@ export function TiltCard({
 		);
 
 		observer.observe(node);
-		return () => observer.disconnect();
+		return () => {
+			observer.disconnect();
+			if (contentTimer) window.clearTimeout(contentTimer);
+		};
 	}, [reducedMotion]);
 
 	const reset = useCallback(() => {
@@ -73,7 +80,8 @@ export function TiltCard({
 			ref={ref}
 			className={cn(
 				"motion-card card-reveal group",
-				visible && "card-reveal-visible",
+				frameOpen && "card-reveal-frame-open",
+				contentOpen && "card-reveal-content-open",
 				className,
 			)}
 			onPointerMove={handlePointerMove}
