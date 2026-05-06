@@ -2,21 +2,31 @@
 
 import { motion } from "framer-motion";
 import { Code2, Mail, MapPin, MoveUpRight } from "lucide-react";
-import type { CSSProperties } from "react";
+import dynamic from "next/dynamic";
 import { ScanLabel } from "@/components/layout/scan-label";
-import { TiltCard } from "@/components/motion/tilt-card";
 import { CyberButton } from "@/components/ui/cyber-button";
-import { heroNodes, heroStats, profile } from "@/content/portfolio";
+import { profile } from "@/content/portfolio";
+
+const HeroSuitScene = dynamic(
+	() =>
+		import("@/features/hero-suit/scene/hero-suit-scene").then(
+			(mod) => mod.HeroSuitScene,
+		),
+	{
+		ssr: false,
+		loading: () => <HeroSuitFallback />,
+	},
+);
 
 export function HeroSection() {
 	return (
 		<section id="top" className="relative overflow-hidden">
-			<div className="mx-auto grid min-h-[calc(100svh-66px)] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.92fr_1.08fr]">
+			<div className="mx-auto grid min-h-[calc(100svh-66px)] max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(620px,0.95fr)_minmax(0,1.05fr)]">
 				<motion.div
 					initial={{ opacity: 0, y: 18 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.55, ease: "easeOut" }}
-					className="scan-target relative"
+					className="scan-target relative w-full min-w-0 justify-self-stretch"
 				>
 					<ScanLabel>Server Component</ScanLabel>
 					<div className="mb-5 flex flex-wrap items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
@@ -48,7 +58,7 @@ export function HeroSection() {
 					<div className="mt-8 flex flex-wrap gap-3">
 						<CyberButton asChild>
 							<a href="#three-lab">
-								View 3D Showcase
+								Open OS Lab
 								<MoveUpRight aria-hidden="true" />
 							</a>
 						</CyberButton>
@@ -71,113 +81,25 @@ export function HeroSection() {
 					initial={{ opacity: 0, scale: 0.98 }}
 					animate={{ opacity: 1, scale: 1 }}
 					transition={{ duration: 0.7, ease: "easeOut", delay: 0.08 }}
-					className="relative"
+					className="scan-target relative w-full min-w-0 justify-self-stretch lg:translate-x-6 xl:translate-x-10"
 				>
-					<TiltCard
-						className="panel corner-brackets scan-target relative overflow-hidden"
-						intensity={7}
-					>
-						<ScanLabel>Client Boundary</ScanLabel>
-						<div className="flex items-center justify-between border-b border-border/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-							<span className="text-primary">Architectural Viewport</span>
-							<span>Blueprint / Domain Map</span>
-						</div>
-						<div className="blueprint-grid relative min-h-[440px] overflow-hidden p-5">
-							<div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-primary/70 scan-bar" />
-							<div
-								className="parallax-chip absolute left-[8%] top-[12%] h-[68%] w-[84%] border border-primary/25"
-								style={{ "--px": "14px", "--py": "10px" } as CSSProperties}
-							/>
-							<div
-								className="parallax-chip absolute left-[18%] top-[24%] h-[46%] w-[64%] border border-secondary/20"
-								style={{ "--px": "-10px", "--py": "14px" } as CSSProperties}
-							/>
-							<svg
-								className="parallax-chip absolute inset-0 h-full w-full"
-								style={{ "--px": "9px", "--py": "-7px" } as CSSProperties}
-								viewBox="0 0 720 460"
-								fill="none"
-								aria-hidden="true"
-							>
-								<path
-									d="M80 330 L350 105 L640 330 Z"
-									stroke="var(--primary)"
-									strokeOpacity="0.75"
-								/>
-								<path
-									d="M124 315 L350 130 L590 315"
-									stroke="var(--secondary)"
-									strokeOpacity="0.55"
-								/>
-								<path
-									d="M180 302 L350 172 L520 302"
-									stroke="var(--primary)"
-									strokeOpacity="0.42"
-								/>
-								<path
-									d="M80 330 H640"
-									stroke="var(--primary)"
-									strokeOpacity="0.55"
-								/>
-								<path
-									d="M350 105 V352"
-									stroke="var(--secondary)"
-									strokeOpacity="0.3"
-									strokeDasharray="4 8"
-								/>
-								{heroNodes.map((_, index) => {
-									const x = 130 + index * 92;
-									const y = index % 2 === 0 ? 190 : 265;
-									return (
-										<circle
-											key={_}
-											cx={x}
-											cy={y}
-											r="5"
-											fill="var(--primary)"
-											opacity="0.95"
-										/>
-									);
-								})}
-							</svg>
-
-							{heroNodes.map((node, index) => (
-								<div
-									key={node}
-									className="parallax-chip absolute border border-primary/40 bg-background/80 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-primary backdrop-blur transition hover:border-secondary hover:text-secondary"
-									style={
-										{
-											left: `${10 + index * 13}%`,
-											top: `${index % 2 === 0 ? 38 : 56}%`,
-											"--px": `${index % 2 === 0 ? 14 : -12}px`,
-											"--py": `${index % 2 === 0 ? -10 : 12}px`,
-										} as CSSProperties
-									}
-								>
-									{node}
-								</div>
-							))}
-
-							<div className="absolute bottom-4 left-4 right-4 grid gap-2 sm:grid-cols-5">
-								{heroStats.map((stat, index) => (
-									<div
-										key={stat}
-										className="parallax-chip border border-border bg-background/80 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-foreground transition hover:border-primary/60 hover:text-primary"
-										style={
-											{
-												"--px": `${(index - 2) * 4}px`,
-												"--py": "6px",
-											} as CSSProperties
-										}
-									>
-										{stat}
-									</div>
-								))}
-							</div>
-						</div>
-					</TiltCard>
+					<ScanLabel>Client Boundary</ScanLabel>
+					<div className="pointer-events-none absolute left-4 top-6 z-10 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+						Rust space suit / WebGL
+					</div>
+					<HeroSuitScene />
 				</motion.div>
 			</div>
 		</section>
+	);
+}
+
+function HeroSuitFallback() {
+	return (
+		<div className="grid h-[430px] place-items-center sm:h-[540px] lg:h-[640px]">
+			<div className="border border-primary/40 bg-background/70 px-4 py-3 font-mono text-xs uppercase tracking-[0.18em] text-primary backdrop-blur-sm">
+				Loading space suit
+			</div>
+		</div>
 	);
 }
