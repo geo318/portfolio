@@ -344,23 +344,26 @@ a {
 		--reveal-x: 0px;
 		--reveal-y: 0px;
 		position: relative;
+		clip-path: inset(0 0 0 0);
 		transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry))
 			translate3d(var(--reveal-x), var(--reveal-y), 0)
 			scale(var(--reveal-scale));
 		transform-style: preserve-3d;
 		transition:
+			clip-path 180ms ease,
 			transform 180ms ease,
 			opacity 180ms ease,
 			border-color 180ms ease,
 			box-shadow 180ms ease,
 			background 180ms ease;
-		will-change: transform;
+		will-change: transform, clip-path;
 	}
 
 	.card-reveal {
-		--reveal-scale: 0.92;
-		--reveal-x: 18px;
-		--reveal-y: -18px;
+		--reveal-scale: 0.96;
+		--reveal-x: 14px;
+		--reveal-y: -14px;
+		clip-path: inset(0 0 calc(100% - 2px) calc(100% - 2px));
 		opacity: 0;
 		transform-origin: top right;
 	}
@@ -374,10 +377,12 @@ a {
 		--reveal-scale: 1;
 		--reveal-x: 0px;
 		--reveal-y: 0px;
+		clip-path: inset(0 0 0 0);
 		opacity: 1;
 		transition:
-			transform 720ms cubic-bezier(0.22, 1, 0.36, 1),
-			opacity 360ms ease,
+			clip-path 260ms cubic-bezier(0.16, 1, 0.3, 1),
+			transform 580ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 120ms ease,
 			border-color 180ms ease,
 			box-shadow 180ms ease,
 			background 180ms ease;
@@ -386,7 +391,7 @@ a {
 	.card-reveal-visible .motion-card-depth,
 	.card-reveal-visible .motion-card-glare {
 		clip-path: inset(0 0 0 0);
-		transition: clip-path 720ms cubic-bezier(0.22, 1, 0.36, 1);
+		transition: clip-path 640ms cubic-bezier(0.22, 1, 0.36, 1) 160ms;
 	}
 
 	.card-reveal::before {
