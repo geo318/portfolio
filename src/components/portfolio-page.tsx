@@ -2,12 +2,13 @@
 
 import { SiteHeader } from "@/components/layout/site-header";
 import { InteractiveBackdrop } from "@/components/motion/interactive-backdrop";
+import { PerformanceMonitor } from "@/components/motion/performance-monitor";
 import { ApplicationNotes } from "@/components/sections/application-notes";
 import { ArchitectureSection } from "@/components/sections/architecture-section";
 import { ContactSection } from "@/components/sections/contact-section";
+import { FitSection } from "@/components/sections/fit-section";
 import { HeroSection } from "@/components/sections/hero-section";
 import { PerformanceSection } from "@/components/sections/performance-section";
-import { FitSection } from "@/components/sections/fit-section";
 import { PropertySection } from "@/components/sections/property-section";
 import { SelectedWorkSection } from "@/components/sections/selected-work-section";
 import { StackSection } from "@/components/sections/stack-section";
@@ -26,7 +27,8 @@ export function PortfolioPage() {
 			)}
 		>
 			<InteractiveBackdrop />
-			<div className="pointer-events-none fixed inset-0 z-[60] hidden scanline architecture-scan:block" />
+			<PerformanceMonitor />
+			<div className="pointer-events-none fixed inset-0 z-60 hidden scanline architecture-scan:block" />
 			<SiteHeader />
 			<HeroSection />
 			<FitSection />

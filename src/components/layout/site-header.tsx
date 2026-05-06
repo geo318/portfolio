@@ -16,8 +16,8 @@ export function SiteHeader() {
 					className="flex items-center gap-3"
 					aria-label="Giorgi Lomidze home"
 				>
-					<span className="corner-brackets grid size-9 place-items-center font-mono text-sm font-bold text-primary text-glow">
-						GL
+					<span className="brand-mark corner-brackets grid size-9 place-items-center font-mono text-sm font-bold text-primary text-glow">
+						<span className="brand-mark-label">GL</span>
 					</span>
 					<span className="hidden font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:block">
 						<span className="block text-primary">Giorgi Lomidze</span>

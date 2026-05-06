@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotionPreference } from "@/hooks/use-reduced-motion-preference";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,28 @@ export function TiltCard({
 }: TiltCardProps) {
 	const ref = useRef<HTMLElement>(null);
 	const reducedMotion = useReducedMotionPreference();
+	const [visible, setVisible] = useState(false);
+
+	useEffect(() => {
+		const node = ref.current;
+		if (!node || reducedMotion) {
+			setVisible(true);
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setVisible(true);
+					observer.disconnect();
+				}
+			},
+			{ rootMargin: "-8% 0px -12% 0px", threshold: 0.18 },
+		);
+
+		observer.observe(node);
+		return () => observer.disconnect();
+	}, [reducedMotion]);
 
 	const reset = useCallback(() => {
 		const node = ref.current;
@@ -49,7 +71,11 @@ export function TiltCard({
 	return (
 		<article
 			ref={ref}
-			className={cn("motion-card group", className)}
+			className={cn(
+				"motion-card card-reveal group",
+				visible && "card-reveal-visible",
+				className,
+			)}
 			onPointerMove={handlePointerMove}
 			onPointerLeave={reset}
 			{...props}

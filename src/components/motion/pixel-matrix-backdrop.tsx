@@ -7,6 +7,9 @@ const MATRIX_GLYPHS = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃ
 
 type CursorState = {
 	active: boolean;
+	lastActiveAt: number;
+	matrixIntensity: number;
+	pressed: boolean;
 	x: number;
 	y: number;
 	targetX: number;
@@ -31,6 +34,12 @@ type Planet = {
 	phase: number;
 	radius: number;
 	speed: number;
+};
+
+type TrailPoint = {
+	alpha: number;
+	x: number;
+	y: number;
 };
 
 function seededRandom(seed: number) {
@@ -67,6 +76,9 @@ export function PixelMatrixBackdrop() {
 
 		const cursor: CursorState = {
 			active: false,
+			lastActiveAt: 0,
+			matrixIntensity: 0,
+			pressed: false,
 			x: window.innerWidth * 0.5,
 			y: window.innerHeight * 0.5,
 			targetX: window.innerWidth * 0.5,
@@ -77,6 +89,11 @@ export function PixelMatrixBackdrop() {
 		let height = 0;
 		let dpr = 1;
 		let frame = 0;
+		let lastRenderAt = 0;
+		let trail: TrailPoint[] = [];
+		let lastTrailAt = 0;
+		let lastTrailX = cursor.x;
+		let lastTrailY = cursor.y;
 		let stars: Star[] = [];
 		let planets: Planet[] = [];
 
@@ -84,7 +101,7 @@ export function PixelMatrixBackdrop() {
 			const random = seededRandom(
 				7001 + Math.round(width * 0.17) + Math.round(height * 0.29),
 			);
-			const starCount = width < 760 ? 340 : 640;
+			const starCount = width < 760 ? 140 : 260;
 
 			stars = Array.from({ length: starCount }, () => {
 				const tintRoll = random();
@@ -157,7 +174,7 @@ export function PixelMatrixBackdrop() {
 		};
 
 		const resize = () => {
-			dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+			dpr = Math.min(window.devicePixelRatio || 1, 1);
 			width = window.innerWidth;
 			height = window.innerHeight;
 			canvas.width = Math.floor(width * dpr);
@@ -325,18 +342,23 @@ export function PixelMatrixBackdrop() {
 		};
 
 		const drawMatrixReveal = (time: number) => {
-			if (!cursor.active) return;
+			const idleMs = performance.now() - cursor.lastActiveAt;
+			const targetIntensity = cursor.pressed || idleMs < 260 ? 1 : 0;
+			cursor.matrixIntensity += (targetIntensity - cursor.matrixIntensity) * 0.18;
+			if (cursor.matrixIntensity < 0.015) return;
 
-			const radius = width < 760 ? 132 : 210;
-			const columnGap = width < 760 ? 18 : 15;
-			const rowGap = width < 760 ? 18 : 16;
+			const radius = (width < 760 ? 72 : 96) * cursor.matrixIntensity;
+			const columnGap = width < 760 ? 20 : 18;
+			const rowGap = columnGap;
 			const leftColumn = Math.floor((cursor.x - radius) / columnGap);
 			const rightColumn = Math.ceil((cursor.x + radius) / columnGap);
-			const tick = Math.floor(time * 12);
+			const topRow = Math.floor((cursor.y - radius) / rowGap);
+			const bottomRow = Math.ceil((cursor.y + radius) / rowGap);
+			const tick = Math.floor(time * 10);
 
 			ctx.save();
 			ctx.globalCompositeOperation = "lighter";
-			ctx.font = `${width < 760 ? 13 : 14}px "JetBrains Mono", "IBM Plex Mono", monospace`;
+			ctx.font = `${width < 760 ? 12 : 13}px "JetBrains Mono", "IBM Plex Mono", monospace`;
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
 
@@ -348,8 +370,8 @@ export function PixelMatrixBackdrop() {
 				cursor.y,
 				radius,
 			);
-			halo.addColorStop(0, "rgba(158,255,79,0.13)");
-			halo.addColorStop(0.34, "rgba(57,215,255,0.08)");
+			halo.addColorStop(0, `rgba(158,255,79,${0.08 * cursor.matrixIntensity})`);
+			halo.addColorStop(0.42, `rgba(57,215,255,${0.05 * cursor.matrixIntensity})`);
 			halo.addColorStop(1, "rgba(0,0,0,0)");
 			ctx.fillStyle = halo;
 			ctx.beginPath();
@@ -363,27 +385,28 @@ export function PixelMatrixBackdrop() {
 				if (columnStrength <= 0) continue;
 
 				const seed = (Math.sin(column * 91.17) + 1) * 0.5;
-				const speed = 46 + seed * 72;
-				const phase = seed * height;
-				const rows = Math.ceil(height / rowGap) + 6;
+				const drift = (time * (18 + seed * 34) + seed * rowGap) % rowGap;
 
-				for (let row = 0; row < rows; row += 1) {
-					const y =
-						((row * rowGap + time * speed + phase) % (height + rowGap * 4)) -
-						rowGap * 2;
+				for (let row = topRow - 1; row <= bottomRow + 1; row += 1) {
+					const y = row * rowGap + drift - rowGap * 0.5;
 					const dy = y - cursor.y;
 					const distance = Math.sqrt(dx * dx + dy * dy);
 					const radialStrength = Math.max(0, 1 - distance / radius);
 					if (radialStrength <= 0.02) continue;
 
-					const trail = 0.35 + ((row + tick + column) % 9) / 12;
-					const alpha = clamp(radialStrength * columnStrength * trail, 0, 0.84);
+					const glyph = glyphFor(column, row, tick);
+					const trail = 0.46 + ((row + tick + column) % 7) / 10;
+					const alpha = clamp(
+						radialStrength * columnStrength * trail * cursor.matrixIntensity,
+						0,
+						0.58,
+					);
 					const hot = radialStrength > 0.72 && (row + column + tick) % 5 === 0;
 
 					ctx.fillStyle = hot
 						? `rgba(248,255,79,${alpha})`
 						: `rgba(158,255,79,${alpha})`;
-					ctx.fillText(glyphFor(column, row, tick), x, y);
+					ctx.fillText(glyph, x, y);
 
 					if (hot) {
 						ctx.fillStyle = `rgba(57,215,255,${alpha * 0.55})`;
@@ -392,7 +415,7 @@ export function PixelMatrixBackdrop() {
 				}
 			}
 
-			const pixelGap = 7;
+			const pixelGap = 10;
 			const startX =
 				Math.floor((cursor.x - radius * 0.8) / pixelGap) * pixelGap;
 			const endX = cursor.x + radius * 0.8;
@@ -408,12 +431,76 @@ export function PixelMatrixBackdrop() {
 					const strength = Math.max(0, 1 - distance / (radius * 0.8));
 					if (strength <= 0.1) continue;
 
-					ctx.fillStyle = `rgba(57,215,255,${strength * 0.12})`;
+					ctx.fillStyle = `rgba(57,215,255,${strength * 0.08 * cursor.matrixIntensity})`;
 					ctx.fillRect(x, y, 1, 1);
 				}
 			}
 
 			ctx.restore();
+		};
+
+		const drawCursorComet = () => {
+			for (const point of trail) {
+				point.alpha *= 0.88;
+			}
+			trail = trail.filter((point) => point.alpha > 0.03).slice(-14);
+
+			if (trail.length === 0) return;
+
+			ctx.save();
+			ctx.globalCompositeOperation = "lighter";
+			ctx.lineCap = "round";
+			ctx.lineJoin = "round";
+
+			for (let index = 1; index < trail.length; index += 1) {
+				const previous = trail[index - 1];
+				const point = trail[index];
+				const alpha = point.alpha * (index / trail.length);
+				ctx.strokeStyle = `rgba(57,215,255,${alpha * 0.52})`;
+				ctx.lineWidth = 1.2 + alpha * 5;
+				ctx.beginPath();
+				ctx.moveTo(previous.x, previous.y);
+				ctx.lineTo(point.x, point.y);
+				ctx.stroke();
+
+				ctx.strokeStyle = `rgba(158,255,79,${alpha * 0.32})`;
+				ctx.lineWidth = 1;
+				ctx.stroke();
+			}
+
+			const head = trail.at(-1);
+			if (head) {
+				const glow = ctx.createRadialGradient(
+					head.x,
+					head.y,
+					0,
+					head.x,
+					head.y,
+					30,
+				);
+				glow.addColorStop(0, `rgba(248,255,79,${0.32 * head.alpha})`);
+				glow.addColorStop(0.35, `rgba(57,215,255,${0.2 * head.alpha})`);
+				glow.addColorStop(1, "rgba(0,0,0,0)");
+				ctx.fillStyle = glow;
+				ctx.beginPath();
+				ctx.arc(head.x, head.y, 30, 0, Math.PI * 2);
+				ctx.fill();
+			}
+
+			ctx.restore();
+		};
+
+		const pushTrailPoint = (x: number, y: number, alpha: number) => {
+			const now = performance.now();
+			const dx = x - lastTrailX;
+			const dy = y - lastTrailY;
+			if (now - lastTrailAt < 18 && dx * dx + dy * dy < 18) return;
+
+			lastTrailAt = now;
+			lastTrailX = x;
+			lastTrailY = y;
+			trail.push({ x, y, alpha });
+			if (trail.length > 14) trail = trail.slice(-14);
 		};
 
 		const render = () => {
@@ -431,10 +518,18 @@ export function PixelMatrixBackdrop() {
 			drawStars(time, pointerX, pointerY);
 			drawSolarSystem(time, sunX, sunY, pointerX, pointerY);
 			drawMatrixReveal(time);
+			drawCursorComet();
 		};
 
 		const loop = () => {
-			render();
+			const now = performance.now();
+			const activeEffects =
+				trail.length > 0 || cursor.pressed || cursor.matrixIntensity > 0.015;
+			const targetInterval = activeEffects ? 33 : 58;
+			if (now - lastRenderAt >= targetInterval) {
+				render();
+				lastRenderAt = now;
+			}
 			frame = requestAnimationFrame(loop);
 		};
 
@@ -443,11 +538,36 @@ export function PixelMatrixBackdrop() {
 			cursor.active = true;
 			cursor.targetX = event.clientX;
 			cursor.targetY = event.clientY;
+			pushTrailPoint(event.clientX, event.clientY, cursor.pressed ? 1 : 0.72);
+			if (cursor.pressed) {
+				cursor.lastActiveAt = performance.now();
+			}
+			if (reducedMotion) render();
+		};
+
+		const onPointerDown = (event: PointerEvent) => {
+			if (event.pointerType === "touch") return;
+			cursor.active = true;
+			cursor.pressed = true;
+			cursor.lastActiveAt = performance.now();
+			cursor.targetX = event.clientX;
+			cursor.targetY = event.clientY;
+			cursor.x = event.clientX;
+			cursor.y = event.clientY;
+			pushTrailPoint(event.clientX, event.clientY, 1);
+			if (reducedMotion) render();
+		};
+
+		const onPointerUp = () => {
+			cursor.active = false;
+			cursor.pressed = false;
+			cursor.lastActiveAt = performance.now();
 			if (reducedMotion) render();
 		};
 
 		const onPointerLeave = () => {
 			cursor.active = false;
+			cursor.pressed = false;
 			if (reducedMotion) render();
 		};
 
@@ -463,6 +583,8 @@ export function PixelMatrixBackdrop() {
 
 		window.addEventListener("resize", resize);
 		window.addEventListener("pointermove", onPointerMove, { passive: true });
+		window.addEventListener("pointerdown", onPointerDown, { passive: true });
+		window.addEventListener("pointerup", onPointerUp);
 		window.addEventListener("pointerleave", onPointerLeave);
 		document.addEventListener("visibilitychange", onVisibilityChange);
 
@@ -470,6 +592,8 @@ export function PixelMatrixBackdrop() {
 			cancelAnimationFrame(frame);
 			window.removeEventListener("resize", resize);
 			window.removeEventListener("pointermove", onPointerMove);
+			window.removeEventListener("pointerdown", onPointerDown);
+			window.removeEventListener("pointerup", onPointerUp);
 			window.removeEventListener("pointerleave", onPointerLeave);
 			document.removeEventListener("visibilitychange", onVisibilityChange);
 		};
