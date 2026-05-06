@@ -44,6 +44,7 @@ export const navLinks: LinkItem[] = [
 	{ label: "OS Lab", href: "#three-lab" },
 	{ label: "Architecture", href: "#architecture" },
 	{ label: "Work", href: "#work" },
+	{ label: "Chat", href: "#chat" },
 	{ label: "Contact", href: "#contact" },
 ];
 

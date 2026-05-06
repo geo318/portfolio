@@ -14,6 +14,7 @@
 - Three.js / React Three Fiber / Drei
 - Zustand
 - Zod
+- Vercel AI SDK
 
 ## Commands
 
@@ -37,6 +38,20 @@ Local dev URL:
 ```bash
 http://localhost:3000
 ```
+
+## Live Chat
+
+The portfolio includes a Vercel AI SDK chat route at `/api/chat`.
+
+```bash
+OPENAI_API_KEY=...
+# optional
+OPENAI_CHAT_MODEL=gpt-4.1-mini
+```
+
+Keep the key server-side only. The chat prompt is grounded in portfolio content
+and tuned to answer in Giorgi's first-person voice without overstating 3D/WebGL
+experience.
 
 ## Notes
 
