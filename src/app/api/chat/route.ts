@@ -8,6 +8,27 @@ import { giorgiChatSystemPrompt } from "@/content/chat-profile";
 
 export const maxDuration = 30;
 
+const DEFAULT_OPENAI_CHAT_MODEL = "gpt-4.1-mini";
+const legacyModelIds = new Set([
+	"gpt-4",
+	"gpt-4-0314",
+	"gpt-4-0613",
+	"gpt-4-32k",
+	"gpt-4-32k-0314",
+	"gpt-4-32k-0613",
+	"gpt-3.5-turbo-0301",
+	"gpt-3.5-turbo-0613",
+]);
+
+function getChatModel() {
+	const configured = process.env.OPENAI_CHAT_MODEL?.trim();
+	if (!configured || legacyModelIds.has(configured)) {
+		return DEFAULT_OPENAI_CHAT_MODEL;
+	}
+
+	return configured;
+}
+
 export async function POST(request: Request) {
 	if (!process.env.OPENAI_API_KEY) {
 		return Response.json(
@@ -26,7 +47,7 @@ export async function POST(request: Request) {
 	}
 
 	const result = streamText({
-		model: openai(process.env.OPENAI_CHAT_MODEL ?? "gpt-4.1-mini"),
+		model: openai(getChatModel()),
 		system: giorgiChatSystemPrompt,
 		messages: await convertToModelMessages(messages.slice(-10)),
 		temperature: 0.35,

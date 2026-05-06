@@ -111,7 +111,7 @@ export function LiveChatSection() {
 								)}
 							>
 								<span className="size-2 rounded-full bg-current" />
-								{error ? "Needs Server Key" : busy ? "Streaming" : "Ready"}
+								{error ? "Setup Required" : busy ? "Streaming" : "Ready"}
 							</span>
 						</div>
 
@@ -121,9 +121,16 @@ export function LiveChatSection() {
 							))}
 							{error ? (
 								<div className="border border-[#ff3b4f]/40 bg-[#ff3b4f]/8 p-3 font-mono text-xs leading-6 text-muted-foreground">
-									Add <span className="text-foreground">OPENAI_API_KEY</span> to
-									enable live responses. Optional: set{" "}
+									Check <span className="text-foreground">OPENAI_API_KEY</span>{" "}
+									and{" "}
 									<span className="text-foreground">OPENAI_CHAT_MODEL</span>.
+									The route falls back to gpt-4.1-mini for legacy model IDs.
+									If those are correct, check OpenAI project billing/quota.
+									{error.message ? (
+										<span className="mt-2 block text-[#ffb4c4]">
+											{error.message.slice(0, 180)}
+										</span>
+									) : null}
 								</div>
 							) : null}
 						</div>
