@@ -41,7 +41,7 @@ export const profile = z
 
 export const navLinks: LinkItem[] = [
 	{ label: "Fit", href: "#fit" },
-	{ label: "3D Lab", href: "#three-lab" },
+	{ label: "OS Lab", href: "#three-lab" },
 	{ label: "Architecture", href: "#architecture" },
 	{ label: "Work", href: "#work" },
 	{ label: "Contact", href: "#contact" },

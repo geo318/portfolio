@@ -1,96 +1,676 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
-import { ScanLabel } from "@/components/layout/scan-label";
+import {
+	useEffect,
+	useRef,
+	useState,
+	type PointerEvent,
+} from "react";
 import { SectionShell } from "@/components/layout/section-shell";
+import { profile } from "@/content/portfolio";
 
-const DomainMapScene = dynamic(
-	() =>
-		import("@/features/three-lab/scene/domain-map-scene").then(
-			(mod) => mod.DomainMapScene,
-		),
+type OsApp = {
+	id: string;
+	name: string;
+	process: string;
+	role: string;
+	stack: string[];
+	description: string;
+	bullets: string[];
+	icon: string;
+	accent: "primary" | "secondary" | "magenta";
+};
+
+type WindowState = {
+	id: string;
+	x: number;
+	y: number;
+	w: number;
+	z: number;
+	minimized: boolean;
+	maximized: boolean;
+};
+
+const osApps: OsApp[] = [
 	{
-		ssr: false,
-		loading: () => <ThreeFallback label="Loading 3D scene" />,
+		id: "runtime",
+		name: "frontend_runtime.app",
+		process: "React / Next.js",
+		role: "Production UI shell",
+		stack: ["Next.js 16", "React 19", "TypeScript", "App Router"],
+		description:
+			"Reliable frontend work: typed components, route boundaries, server/client split, and UI that survives product change.",
+		bullets: [
+			"Builds around behavior and contracts first.",
+			"Keeps reusable UI small enough to reason about.",
+			"Uses server/client boundaries intentionally instead of by habit.",
+		],
+		icon: "▣",
+		accent: "primary",
 	},
-);
+	{
+		id: "realtime",
+		name: "realtime_bus.app",
+		process: "WebSocket state",
+		role: "Live product flows",
+		stack: ["WebSockets", "React Query", "Timers", "Optimistic UI"],
+		description:
+			"Live interfaces need calm state handling: connection status, event ordering, cache updates, timers, and user-facing feedback.",
+		bullets: [
+			"Prefers event-driven updates over wasteful polling.",
+			"Separates transport events from UI projection.",
+			"Treats latency and stale state as product problems.",
+		],
+		icon: "◉",
+		accent: "secondary",
+	},
+	{
+		id: "domain",
+		name: "domain_boundaries.sys",
+		process: "DDD / SOLID",
+		role: "Application architecture",
+		stack: ["Use cases", "Services", "Adapters", "Zod contracts"],
+		description:
+			"Business rules stay testable when UI, transport, persistence, and domain behavior are not collapsed into one layer.",
+		bullets: [
+			"Extracts domain services where rules repeat or matter.",
+			"Keeps adapters replaceable around external systems.",
+			"Makes risky refactors incremental instead of theatrical.",
+		],
+		icon: "◈",
+		accent: "primary",
+	},
+	{
+		id: "webgl",
+		name: "webgl_lab.exe",
+		process: "Focused 3D readiness",
+		role: "Graphics-heavy UI boundary",
+		stack: ["Three.js", "R3F", "Drei", "Lazy loading"],
+		description:
+			"A focused lab, not a claim of years as a production graphics engineer. It shows how heavy rendering code is isolated and guarded.",
+		bullets: [
+			"Loads heavy WebGL code behind explicit boundaries.",
+			"Supports fallback and reduced-motion behavior.",
+			"Keeps GPU cleanup and performance constraints visible.",
+		],
+		icon: "◇",
+		accent: "magenta",
+	},
+	{
+		id: "performance",
+		name: "performance_guard.bin",
+		process: "Frontend reliability",
+		role: "Measured optimization",
+		stack: ["Profiling", "Memoization", "Code split", "A11y"],
+		description:
+			"Performance work is treated as a systems problem: measure, isolate, reduce unnecessary work, then verify user-facing behavior.",
+		bullets: [
+			"Code-splits expensive surfaces.",
+			"Uses memoization when it protects real hot paths.",
+			"Honors accessibility and reduced-motion constraints.",
+		],
+		icon: "▤",
+		accent: "secondary",
+	},
+	{
+		id: "imall",
+		name: "imall_marketplace.exe",
+		process: "Public code sample",
+		role: "Multi-tenant commerce",
+		stack: ["Next.js", "Bun", "Elysia", "Drizzle", "PostgreSQL"],
+		description:
+			"Marketplace project used as a practical architecture sample: tenant routing, catalog, inventory concepts, auctions, and typed boundaries.",
+		bullets: [
+			"Models tenant-aware product and commerce flows.",
+			"Connects real-time auction ideas to frontend state.",
+			"Shows how application structure maps to product behavior.",
+		],
+		icon: "▦",
+		accent: "primary",
+	},
+];
 
-const controls = [
-	"Architecture Scan Mode",
-	"Blueprint / Solid / Wireframe",
-	"Lazy-loaded 3D",
-	"WebSocket Event",
-	"Domain Service",
-	"Instanced Mesh",
-	"Performance Guard",
-	"Draw calls < 100",
+const initialWindows: WindowState[] = [
+	{
+		id: "runtime",
+		x: 152,
+		y: 64,
+		w: 430,
+		z: 11,
+		minimized: false,
+		maximized: false,
+	},
+	{
+		id: "domain",
+		x: 308,
+		y: 192,
+		w: 460,
+		z: 12,
+		minimized: false,
+		maximized: false,
+	},
 ];
 
 export function ThreeShowcaseSection() {
 	return (
 		<SectionShell
 			id="three-lab"
-			eyebrow="// Sector 03 // Three.js / WebGL Showcase"
-			code="DOMAIN_MAP_3D"
+			eyebrow="// Sector 03 // GL OS Workstation"
+			code="OS_SHELL_01"
 			title={
 				<>
-					Three.js / WebGL{" "}
-					<span className="text-primary text-glow">Technical Showcase</span>
+					Systems work as a{" "}
+					<span className="text-primary text-glow">desktop interface</span>.
 				</>
 			}
-			subtitle="A focused interactive scene built to demonstrate graphics-heavy frontend thinking: scene architecture, performance boundaries, state isolation, and maintainable rendering code."
-			scanLabel="Lazy-loaded 3D"
+			subtitle="Open the processes, drag windows, minimize them, and inspect the way I frame frontend systems work: runtime UI, real-time state, domain boundaries, WebGL readiness, and performance discipline."
+			scanLabel="Interactive OS"
 		>
-			<div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-				<div className="panel corner-brackets scan-target relative overflow-hidden">
-					<ScanLabel>Lazy-loaded 3D</ScanLabel>
-					<Suspense fallback={<ThreeFallback label="Preparing viewport" />}>
-						<DomainMapScene />
-					</Suspense>
-				</div>
-
-				<aside className="grid gap-4">
-					<div className="panel corner-brackets scan-target relative p-4">
-						<ScanLabel>Performance Guard</ScanLabel>
-						<div className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-							Scene Constraints
-						</div>
-						<div className="grid gap-2">
-							{controls.map((control) => (
-								<div
-									key={control}
-									className="flex items-center justify-between border border-border bg-background/60 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em]"
-								>
-									<span className="text-muted-foreground">{control}</span>
-									<span className="text-primary">on</span>
-								</div>
-							))}
-						</div>
-					</div>
-
-					<div className="panel corner-brackets p-4">
-						<div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-secondary">
-							Honesty boundary
-						</div>
-						<p className="text-sm leading-7 text-muted-foreground">
-							The scene is a focused lab, not a claim of long production 3D
-							tenure. It shows how I isolate state, lazy-load graphics code,
-							handle fallbacks, and keep rendering logic maintainable.
-						</p>
-					</div>
-				</aside>
-			</div>
+			<ProjectsOS />
 		</SectionShell>
 	);
 }
 
-function ThreeFallback({ label }: { label: string }) {
+function ProjectsOS() {
+	const [windows, setWindows] = useState<WindowState[]>(initialWindows);
+	const [startOpen, setStartOpen] = useState(false);
+	const [desktopSize, setDesktopSize] = useState({ width: 0, height: 0 });
+	const desktopRef = useRef<HTMLDivElement>(null);
+	const zTopRef = useRef(12);
+	const dragRef = useRef<{
+		id: string;
+		offsetX: number;
+		offsetY: number;
+	} | null>(null);
+
+	const focus = (id: string) => {
+		const next = zTopRef.current + 1;
+		zTopRef.current = next;
+		setWindows((items) =>
+			items.map((item) =>
+				item.id === id ? { ...item, z: next, minimized: false } : item,
+			),
+		);
+	};
+
+	const open = (id: string) => {
+		setStartOpen(false);
+		const next = zTopRef.current + 1;
+		zTopRef.current = next;
+		setWindows((items) => {
+			const existing = items.find((item) => item.id === id);
+			if (existing) {
+				return items.map((item) =>
+					item.id === id
+						? { ...item, z: next, minimized: false, maximized: false }
+						: item,
+				);
+			}
+
+			const index = items.length;
+			return [
+				...items,
+				{
+					id,
+					x: 120 + index * 34,
+					y: 54 + index * 30,
+					w: id === "domain" ? 500 : 460,
+					z: next,
+					minimized: false,
+					maximized: false,
+				},
+			];
+		});
+	};
+
+	const close = (id: string) => {
+		dragRef.current = null;
+		setWindows((items) => items.filter((item) => item.id !== id));
+	};
+
+	const minimize = (id: string) => {
+		dragRef.current = null;
+		setWindows((items) =>
+			items.map((item) =>
+				item.id === id ? { ...item, minimized: true } : item,
+			),
+		);
+	};
+
+	const toggleMinimized = (id: string) => {
+		const target = windows.find((item) => item.id === id);
+		if (!target) {
+			open(id);
+			return;
+		}
+		if (target.minimized) focus(id);
+		else minimize(id);
+	};
+
+	const toggleMaximized = (id: string) => {
+		dragRef.current = null;
+		const next = zTopRef.current + 1;
+		zTopRef.current = next;
+		setWindows((items) =>
+			items.map((item) =>
+				item.id === id
+					? {
+							...item,
+							z: next,
+							minimized: false,
+							maximized: !item.maximized,
+						}
+					: item,
+			),
+		);
+	};
+
+	const resetLayout = () => {
+		dragRef.current = null;
+		zTopRef.current = 12;
+		setStartOpen(false);
+		setWindows(initialWindows);
+	};
+
+	const restoreAll = () => {
+		setStartOpen(false);
+		setWindows((items) =>
+			items.map((item) => ({
+				...item,
+				minimized: false,
+				maximized: false,
+			})),
+		);
+	};
+
+	const openAll = () => {
+		setStartOpen(false);
+		let nextZ = zTopRef.current;
+		setWindows(
+			osApps.map((app, index) => {
+				nextZ += 1;
+				return {
+					id: app.id,
+					x: 118 + (index % 3) * 52,
+					y: 44 + (index % 4) * 42,
+					w: app.id === "domain" ? 500 : 460,
+					z: nextZ,
+					minimized: index > 2,
+					maximized: false,
+				};
+			}),
+		);
+		zTopRef.current = nextZ;
+	};
+
+	const closeAll = () => {
+		dragRef.current = null;
+		setStartOpen(false);
+		setWindows([]);
+	};
+
+	useEffect(() => {
+		const desktop = desktopRef.current;
+		if (!desktop) return;
+
+		const syncSize = () => {
+			const rect = desktop.getBoundingClientRect();
+			setDesktopSize({ width: rect.width, height: rect.height });
+		};
+		const observer = new ResizeObserver(syncSize);
+		syncSize();
+		observer.observe(desktop);
+		return () => observer.disconnect();
+	}, []);
+
+	useEffect(() => {
+		const onMove = (event: globalThis.PointerEvent) => {
+			const drag = dragRef.current;
+			const desktop = desktopRef.current;
+			if (!drag || !desktop) return;
+
+			const rect = desktop.getBoundingClientRect();
+			setWindows((items) =>
+				items.map((item) => {
+					if (item.id !== drag.id) return item;
+					const renderedWidth = getRenderedWindowWidth(item.w, rect.width);
+					const maxX = Math.max(8, rect.width - renderedWidth - 8);
+					const maxY = Math.max(0, rect.height - 80);
+					return {
+						...item,
+						x: clamp(event.clientX - rect.left - drag.offsetX, 8, maxX),
+						y: clamp(event.clientY - rect.top - drag.offsetY, 8, maxY),
+					};
+				}),
+			);
+		};
+
+		const onUp = () => {
+			dragRef.current = null;
+		};
+
+		window.addEventListener("pointermove", onMove);
+		window.addEventListener("pointerup", onUp);
+		return () => {
+			window.removeEventListener("pointermove", onMove);
+			window.removeEventListener("pointerup", onUp);
+		};
+	}, []);
+
+	const startDrag = (event: PointerEvent<HTMLDivElement>, id: string) => {
+		const desktop = desktopRef.current;
+		const target = windows.find((item) => item.id === id);
+		if (!desktop || !target || target.maximized) return;
+
+		focus(id);
+		const rect = desktop.getBoundingClientRect();
+		dragRef.current = {
+			id,
+			offsetX: event.clientX - rect.left - target.x,
+			offsetY: event.clientY - rect.top - target.y,
+		};
+	};
+
 	return (
-		<div className="blueprint-grid grid min-h-[520px] place-items-center p-6">
-			<div className="border border-primary/40 bg-background/80 px-4 py-3 font-mono text-xs uppercase tracking-[0.18em] text-primary">
-				{label}
+		<div className="corner-brackets scan-target relative overflow-hidden border border-primary/25 bg-background/75 shadow-[0_24px_100px_rgb(0_0_0/0.32)] backdrop-blur">
+			<div className="flex items-center justify-between gap-4 border-b border-border/60 bg-muted/30 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+				<span className="text-primary">GL/OS - Workstation</span>
+				<span className="hidden sm:inline">
+					{windows.length} processes / {profile.location}
+				</span>
+			</div>
+
+			<div
+				ref={desktopRef}
+				className="micro-pixel-grid relative h-[620px] select-none overflow-hidden bg-[#05070f] sm:h-[680px]"
+			>
+				<div
+					className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_16%,rgb(57_215_255/0.16),transparent_34%),radial-gradient(circle_at_34%_80%,rgb(158_255_79/0.1),transparent_28%),linear-gradient(145deg,rgb(5_7_12/0.62),rgb(9_12_23/0.86))]"
+					aria-hidden="true"
+				/>
+				<div
+					className="pointer-events-none absolute inset-0 opacity-20 scanline"
+					aria-hidden="true"
+				/>
+
+				<div className="absolute left-4 top-4 z-10 grid grid-cols-2 gap-3 sm:grid-cols-1">
+					{osApps.map((app) => (
+						<button
+							key={app.id}
+							type="button"
+							onClick={() => open(app.id)}
+							onDoubleClick={() => open(app.id)}
+							className="group flex w-[112px] flex-col items-center gap-1.5 p-2 text-center transition hover:bg-primary/10"
+						>
+							<span
+								className={`grid size-12 place-items-center border bg-background/75 font-mono text-2xl backdrop-blur transition ${accentClasses(app.accent).icon}`}
+							>
+								{app.icon}
+							</span>
+							<span className="max-w-[104px] overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[9px] leading-tight text-foreground/85 group-hover:text-primary">
+								{app.name}
+							</span>
+						</button>
+					))}
+				</div>
+
+				{windows.map((windowState) => {
+					const app = osApps.find((item) => item.id === windowState.id);
+					if (!app || windowState.minimized) return null;
+					const accent = accentClasses(app.accent);
+					const width = getRenderedWindowWidth(
+						windowState.w,
+						desktopSize.width,
+					);
+					const left = windowState.maximized
+						? 8
+						: desktopSize.width
+							? clamp(
+									windowState.x,
+									8,
+									Math.max(8, desktopSize.width - width - 8),
+								)
+							: windowState.x;
+					const top = windowState.maximized
+						? 8
+						: desktopSize.height
+							? clamp(windowState.y, 8, Math.max(8, desktopSize.height - 80))
+							: windowState.y;
+					const renderedWidth = windowState.maximized
+						? Math.max(280, desktopSize.width - 16)
+						: width;
+					const renderedHeight = windowState.maximized
+						? Math.max(360, desktopSize.height - 16)
+						: undefined;
+
+					return (
+						<div
+							key={windowState.id}
+							onPointerDown={() => focus(windowState.id)}
+							className={`absolute border bg-background/92 shadow-[0_18px_70px_rgb(0_0_0/0.48)] backdrop-blur ${accent.window}`}
+							style={{
+								left,
+								top,
+								width: renderedWidth,
+								height: renderedHeight,
+								zIndex: windowState.z,
+							}}
+						>
+							<div
+								onPointerDown={(event) => startDrag(event, windowState.id)}
+								className={`flex items-center justify-between gap-3 border-b border-border/60 bg-muted/35 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground ${
+									windowState.maximized ? "cursor-default" : "cursor-move"
+								}`}
+							>
+								<span className="flex shrink-0 items-center gap-2">
+									<MacButton
+										tone="close"
+										label="Close"
+										onClick={() => close(windowState.id)}
+									/>
+									<MacButton
+										tone="minimize"
+										label="Minimize"
+										onClick={() => minimize(windowState.id)}
+									/>
+									<MacButton
+										tone="expand"
+										label={
+											windowState.maximized ? "Restore window" : "Expand window"
+										}
+										onClick={() => toggleMaximized(windowState.id)}
+									/>
+								</span>
+								<span className="flex min-w-0 flex-1 items-center gap-2 pl-1">
+									<span className={accent.text}>{app.icon}</span>
+									<span className="truncate text-foreground/90">{app.name}</span>
+								</span>
+							</div>
+
+							<div
+								className={
+									windowState.maximized
+										? "h-[calc(100%-37px)] overflow-y-auto p-5 sm:p-6"
+										: "max-h-[430px] overflow-y-auto p-4"
+								}
+							>
+								<div className="mb-3 flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+									<span>
+										<span className={accent.text}>Process:</span> {app.process}
+									</span>
+									<span>{app.role}</span>
+								</div>
+								<p className="text-sm leading-7 text-muted-foreground">
+									{app.description}
+								</p>
+								<div className="mt-4 flex flex-wrap gap-2">
+									{app.stack.map((item) => (
+										<span
+											key={item}
+											className={`border bg-background/60 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] ${accent.badge}`}
+										>
+											{item}
+										</span>
+									))}
+								</div>
+								<ul className="mt-5 space-y-2 font-mono text-xs leading-6 text-foreground/88">
+									{app.bullets.map((bullet) => (
+										<li key={bullet} className="flex gap-2">
+											<span className={accent.text}>▸</span>
+											<span>{bullet}</span>
+										</li>
+									))}
+								</ul>
+							</div>
+						</div>
+					);
+				})}
+			</div>
+
+			<div className="flex items-center gap-2 border-t border-border/60 bg-muted/30 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+				<button
+					type="button"
+					onClick={() => setStartOpen((current) => !current)}
+					className="border border-primary/70 bg-primary/10 px-2 py-1 text-primary transition hover:bg-primary/20"
+				>
+					Start
+				</button>
+				{startOpen ? (
+					<div className="absolute bottom-10 left-3 z-50 w-72 border border-primary/35 bg-background/95 p-3 shadow-[0_18px_70px_rgb(0_0_0/0.48)] backdrop-blur">
+						<div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+							GL/OS Launcher
+						</div>
+						<div className="grid gap-1">
+							<StartAction label="Open default workspace" onClick={resetLayout} />
+							<StartAction label="Open all processes" onClick={openAll} />
+							<StartAction label="Restore all windows" onClick={restoreAll} />
+							<StartAction label="Close all windows" onClick={closeAll} />
+						</div>
+						<div className="mt-3 grid grid-cols-2 gap-2 border-t border-border/60 pt-3">
+							<a
+								href={profile.github}
+								target="_blank"
+								rel="noreferrer"
+								className="border border-border bg-background/70 px-2 py-1 text-center text-muted-foreground transition hover:border-secondary/60 hover:text-secondary"
+							>
+								GitHub
+							</a>
+							<a
+								href={`mailto:${profile.email}`}
+								className="border border-border bg-background/70 px-2 py-1 text-center text-muted-foreground transition hover:border-primary/60 hover:text-primary"
+							>
+								Email
+							</a>
+						</div>
+					</div>
+				) : null}
+				<div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
+					{windows.map((windowState) => {
+						const app = osApps.find((item) => item.id === windowState.id);
+						if (!app) return null;
+						return (
+							<button
+								key={windowState.id}
+								type="button"
+								onClick={() => toggleMinimized(windowState.id)}
+								className={`shrink-0 border px-2 py-1 transition ${
+									windowState.minimized
+										? "border-border text-muted-foreground hover:border-primary/60"
+										: "border-primary/60 bg-primary/10 text-primary"
+								}`}
+							>
+								{app.icon} {app.name}
+							</button>
+						);
+					})}
+				</div>
+				<span className="hidden shrink-0 text-primary sm:inline">● online</span>
 			</div>
 		</div>
 	);
+}
+
+function MacButton({
+	tone,
+	label,
+	onClick,
+}: {
+	tone: "close" | "minimize" | "expand";
+	label: string;
+	onClick?: () => void;
+}) {
+	const toneClass =
+		tone === "close"
+			? "border-[#ff5f57]/70 bg-[#ff5f57]/80 hover:bg-[#ff5f57]"
+			: tone === "minimize"
+				? "border-[#ffbd2e]/70 bg-[#ffbd2e]/80 hover:bg-[#ffbd2e]"
+				: "border-[#28c840]/70 bg-[#28c840]/80 hover:bg-[#28c840]";
+
+	return (
+		<button
+			type="button"
+			aria-label={label}
+			onPointerDown={(event) => event.stopPropagation()}
+			onClick={(event) => {
+				event.stopPropagation();
+				onClick?.();
+			}}
+			className={`size-3 rounded-full border text-transparent shadow-[0_0_10px_rgb(0_0_0/0.22)] transition ${toneClass}`}
+		/>
+	);
+}
+
+function StartAction({
+	label,
+	onClick,
+}: {
+	label: string;
+	onClick: () => void;
+}) {
+	return (
+		<button
+			type="button"
+			onClick={onClick}
+			className="flex items-center justify-between border border-border bg-background/70 px-3 py-2 text-left text-muted-foreground transition hover:border-primary/60 hover:bg-primary/10 hover:text-primary"
+		>
+			<span>{label}</span>
+			<span className="text-primary">↵</span>
+		</button>
+	);
+}
+
+function accentClasses(accent: OsApp["accent"]) {
+	if (accent === "secondary") {
+		return {
+			icon: "border-secondary/55 text-secondary group-hover:border-secondary",
+			window: "border-secondary/35",
+			text: "text-secondary",
+			badge: "border-secondary/35 text-secondary",
+		};
+	}
+
+	if (accent === "magenta") {
+		return {
+			icon: "border-[#ff2bd6]/55 text-[#ff2bd6] group-hover:border-[#ff2bd6]",
+			window: "border-[#ff2bd6]/35",
+			text: "text-[#ff2bd6]",
+			badge: "border-[#ff2bd6]/35 text-[#ff2bd6]",
+		};
+	}
+
+	return {
+		icon: "border-primary/55 text-primary group-hover:border-primary",
+		window: "border-primary/35",
+		text: "text-primary",
+		badge: "border-primary/35 text-primary",
+	};
+}
+
+function clamp(value: number, min: number, max: number) {
+	return Math.min(Math.max(value, min), max);
+}
+
+function getRenderedWindowWidth(targetWidth: number, desktopWidth: number) {
+	if (!desktopWidth) return targetWidth;
+	return Math.min(targetWidth, Math.max(280, desktopWidth - 16));
 }
