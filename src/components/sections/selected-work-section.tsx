@@ -1,5 +1,6 @@
 import { Code2 } from "lucide-react";
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,8 @@ export function SelectedWorkSection() {
 				</>
 			}
 			subtitle="Advisor platforms, marketplaces, communication tooling, financial integrations, ERP work, and a personal multi-tenant marketplace."
-			scanLabel="Cached Content"
+			scanLabel="Project Config"
+			scanDetail="Selected CV projects mapped from typed content; links render only when provided."
 		>
 			<div className="grid gap-4 md:grid-cols-2">
 				{projects.map((project, index) => (
@@ -27,6 +29,11 @@ export function SelectedWorkSection() {
 							className="panel corner-brackets scan-target relative flex min-h-80 flex-col p-5"
 							intensity={7}
 						>
+							{index === 0 ? (
+								<ScanLabel detail="Repeated project card: static data, optional external link, client tilt only.">
+									Project Card
+								</ScanLabel>
+							) : null}
 							<div className="mb-4 flex items-start justify-between gap-4">
 								<h3 className="text-2xl font-semibold leading-tight">
 									{project.title}

@@ -1,4 +1,5 @@
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { applicationNotes } from "@/content/portfolio";
@@ -15,7 +16,8 @@ export function ApplicationNotes() {
 					<span className="text-primary text-glow">Plain and useful</span>.
 				</>
 			}
-			scanLabel="Cached Content"
+			scanLabel="Static Notes"
+			scanDetail="Application notes are typed copy, not generated at runtime."
 		>
 			<div className="grid gap-4 lg:grid-cols-3">
 				{applicationNotes.map((note, index) => (
@@ -24,6 +26,11 @@ export function ApplicationNotes() {
 							className="panel corner-brackets scan-target relative h-full p-5"
 							intensity={6}
 						>
+							{index === 0 ? (
+								<ScanLabel detail="Repeated note card for compact claim boundaries and fit notes.">
+									Note Card
+								</ScanLabel>
+							) : null}
 							<div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-secondary">
 								Portfolio Note
 							</div>

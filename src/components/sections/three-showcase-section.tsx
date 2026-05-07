@@ -7,6 +7,7 @@ import {
 	type PointerEvent,
 } from "react";
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { profile } from "@/content/portfolio";
 
 type OsApp = {
@@ -164,7 +165,8 @@ export function ThreeShowcaseSection() {
 				</>
 			}
 			subtitle="Open the processes and inspect CV work areas: advisor platforms, marketplace dashboards, integrations, product UI, delivery quality, and public code."
-			scanLabel="Interactive OS"
+			scanLabel="Client Workstation"
+			scanDetail="React client state controls draggable windows, launcher, minimize, and maximize."
 		>
 			<ProjectsOS />
 		</SectionShell>
@@ -373,6 +375,9 @@ function ProjectsOS() {
 
 	return (
 		<div className="corner-brackets scan-target relative overflow-hidden border border-primary/25 bg-background/75 shadow-[0_24px_100px_rgb(0_0_0/0.32)] backdrop-blur">
+			<ScanLabel detail="Client component: local React state, pointer drag, no server mutation.">
+				OS Shell
+			</ScanLabel>
 			<div className="flex items-center justify-between gap-4 border-b border-border/60 bg-muted/30 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
 				<span className="text-primary">GL/OS - Workstation</span>
 				<span className="hidden sm:inline">

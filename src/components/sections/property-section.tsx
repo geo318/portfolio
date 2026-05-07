@@ -1,4 +1,5 @@
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { experience } from "@/content/portfolio";
@@ -16,7 +17,8 @@ export function PropertySection() {
 				</>
 			}
 			subtitle="The CV condensed: companies, responsibilities, and the systems I touched."
-			scanLabel="Cached Content"
+			scanLabel="CV Timeline"
+			scanDetail="Typed experience entries from portfolio content; rendered as repeated cards."
 		>
 			<div className="grid gap-4 lg:grid-cols-2">
 				{experience.map((item, index) => (
@@ -25,6 +27,11 @@ export function PropertySection() {
 							className="panel corner-brackets scan-target relative h-full p-5"
 							intensity={6}
 						>
+							{index === 0 ? (
+								<ScanLabel detail="Repeated timeline card: static CV data inside a React card wrapper.">
+									Timeline Card
+								</ScanLabel>
+							) : null}
 							<div className="mb-4 flex flex-wrap items-start justify-between gap-3">
 								<div>
 									<div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">

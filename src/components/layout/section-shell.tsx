@@ -13,6 +13,7 @@ export function SectionShell({
 	title,
 	subtitle,
 	scanLabel = "Typed Content",
+	scanDetail = "Next page composes this section; SectionShell is a client scroll-animation boundary.",
 	children,
 	className,
 }: {
@@ -22,6 +23,7 @@ export function SectionShell({
 	title?: React.ReactNode;
 	subtitle?: string;
 	scanLabel?: string;
+	scanDetail?: string;
 	children: React.ReactNode;
 	className?: string;
 }) {
@@ -75,7 +77,7 @@ export function SectionShell({
 						style={reducedMotion ? undefined : { y: headerY }}
 						className="scan-target relative mb-8"
 					>
-						<ScanLabel>{scanLabel}</ScanLabel>
+						<ScanLabel detail={scanDetail}>{scanLabel}</ScanLabel>
 						<h2 className="max-w-4xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl">
 							{title}
 						</h2>

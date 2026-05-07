@@ -1,5 +1,6 @@
 import { BriefcaseBusiness, Code2, Download, Mail, Phone } from "lucide-react";
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { CyberButton } from "@/components/ui/cyber-button";
 import { profile } from "@/content/portfolio";
 
@@ -16,9 +17,13 @@ export function ContactSection() {
 				</>
 			}
 			subtitle="The CV has the full timeline. Best fit: frontend-heavy full-stack product work with React, Next.js, TypeScript, integrations, and maintainable delivery."
-			scanLabel="Client Boundary"
+			scanLabel="Contact Actions"
+			scanDetail="Static links for email, GitHub, LinkedIn, phone, and CV download."
 		>
 			<div className="panel corner-brackets scan-target relative p-5">
+				<ScanLabel detail="Anchor/button panel; no provider calls from this section.">
+					Link Panel
+				</ScanLabel>
 				<div className="flex flex-wrap gap-3">
 					<CyberButton asChild>
 						<a href={`mailto:${profile.email}`}>

@@ -1,4 +1,5 @@
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { architectureLayers } from "@/content/portfolio";
 
@@ -15,9 +16,13 @@ export function ArchitectureSection() {
 				</>
 			}
 			subtitle="A practical map of typed UI, service integration, DTO mapping, validation, and platform constraints."
-			scanLabel="Domain Service"
+			scanLabel="Architecture Map"
+			scanDetail="Static DDD map: UI, schema, service, and integration boundaries."
 		>
 			<div className="panel corner-brackets scan-target relative overflow-hidden p-4 md:p-6">
+				<ScanLabel detail="React map panel over typed architecture layers; visual only.">
+					Boundary Panel
+				</ScanLabel>
 				<div className="blueprint-grid absolute inset-0 opacity-40" />
 				<div className="relative grid gap-4 lg:grid-cols-4">
 					{architectureLayers.map((layer, index) => (

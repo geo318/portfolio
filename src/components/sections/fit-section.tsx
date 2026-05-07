@@ -1,4 +1,5 @@
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,8 @@ export function FitSection() {
 				</>
 			}
 			subtitle="Frontend-heavy full-stack delivery, clean integrations, product ownership, refactoring discipline, and enough backend/platform range to move fast."
-			scanLabel="Cached Content"
+			scanLabel="Composed Section"
+			scanDetail="Next page composes typed card data; client shell adds scroll reveal."
 		>
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 				{fitCards.map((item, index) => (
@@ -26,6 +28,11 @@ export function FitSection() {
 							className="panel corner-brackets scan-target relative h-full p-5"
 							intensity={8}
 						>
+							{index === 0 ? (
+								<ScanLabel detail="Repeated React card pattern: Framer reveal + pointer tilt; copy is static config.">
+									Client Card
+								</ScanLabel>
+							) : null}
 							<div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
 								Profile Signal
 							</div>

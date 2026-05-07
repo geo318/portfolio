@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { Reveal } from "@/components/motion/reveal";
 import { performanceHabits } from "@/content/portfolio";
 
@@ -16,9 +17,13 @@ export function PerformanceSection() {
 				</>
 			}
 			subtitle="Recurring delivery habits: typed boundaries, refactoring, SEO, deployment, API tests, and maintainability."
-			scanLabel="Performance Guard"
+			scanLabel="Quality Checklist"
+			scanDetail="Static delivery habits; separate fixed monitor tracks live browser metrics."
 		>
 			<div className="panel corner-brackets scan-target relative overflow-hidden p-5">
+				<ScanLabel detail="Server-rendered checklist panel; no canvas or API work inside.">
+					Static Panel
+				</ScanLabel>
 				<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 					{performanceHabits.map((habit, index) => (
 						<Reveal key={habit} delay={index * 0.018}>

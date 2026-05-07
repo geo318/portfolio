@@ -1,4 +1,5 @@
 import { SectionShell } from "@/components/layout/section-shell";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { skillMatrix } from "@/content/portfolio";
@@ -16,7 +17,8 @@ export function StackSection() {
 				</>
 			}
 			subtitle="Grouped from the CV: frontend, backend/API, database/ORM, and platform tooling."
-			scanLabel="Tested Utility"
+			scanLabel="Typed Stack Map"
+			scanDetail="Typed skill matrix from content config; no runtime fetch here."
 		>
 			<div className="grid gap-4 lg:grid-cols-4">
 				{skillMatrix.map((group, groupIndex) => (
@@ -25,6 +27,11 @@ export function StackSection() {
 							className="panel corner-brackets scan-target relative h-full p-4"
 							intensity={6}
 						>
+							{groupIndex === 0 ? (
+								<ScanLabel detail="Repeated static card group from CV stack categories.">
+									Config Card
+								</ScanLabel>
+							) : null}
 							<h3 className="mb-4 border-b border-border/60 pb-3 font-mono text-xs uppercase tracking-[0.18em] text-primary">
 								{group.category}
 							</h3>
