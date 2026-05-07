@@ -3,7 +3,8 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { LoaderCircle, Send, Square } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ScanLabel } from "@/components/layout/scan-label";
 import { SectionShell } from "@/components/layout/section-shell";
 import { chatSuggestions } from "@/content/chat-profile";
 import { profile } from "@/content/portfolio";
@@ -71,12 +72,18 @@ export function LiveChatSection() {
 	const chatPanelRef = useRef<HTMLDivElement>(null);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const responseCacheRef = useRef(new Map<string, string>());
+	const chatHasActivityRef = useRef(false);
 	const lastSubmittedPromptRef = useRef<string | null>(null);
 	const lastCachedAssistantIdRef = useRef<string | null>(null);
 	const lastViewportScrollAtRef = useRef(0);
 
 	useEffect(() => {
-		messagesEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+		if (!chatHasActivityRef.current) return;
+
+		messagesEndRef.current?.scrollIntoView({
+			block: "end",
+			behavior: "smooth",
+		});
 
 		if (status === "submitted" || status === "streaming") {
 			const now = performance.now();
@@ -119,6 +126,7 @@ export function LiveChatSection() {
 
 	const sendCachedOrNetwork = async (text: string) => {
 		if (!text || busy) return;
+		chatHasActivityRef.current = true;
 		const cacheKey = normalizePrompt(text);
 		const cachedResponse = responseCacheRef.current.get(cacheKey);
 
@@ -170,12 +178,16 @@ export function LiveChatSection() {
 				</>
 			}
 			subtitle="The server prompt answers in my voice using CV, LinkedIn handle, GitHub repos, projects, stack, contact links, and claim boundaries."
-			scanLabel="AI Boundary"
+			scanLabel="AI SDK Chat"
+			scanDetail="useChat + DefaultChatTransport send UI messages to POST /api/chat."
 		>
 			<div
 				ref={chatPanelRef}
 				className="corner-brackets scan-target relative overflow-hidden border border-primary/25 bg-background/80 shadow-[0_24px_100px_rgb(0_0_0/0.32)] backdrop-blur"
 			>
+				<ScanLabel detail="Client state + session Map memo cache; server route streams provider output.">
+					AI Stream Panel
+				</ScanLabel>
 				<div className="flex items-center justify-between border-b border-border/70 bg-card/80 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
 					<div className="flex items-center gap-2">
 						<span className="size-3 rounded-full bg-[#ff3b4f]" />
@@ -241,9 +253,8 @@ export function LiveChatSection() {
 							{error ? (
 								<div className="border border-[#ff3b4f]/40 bg-[#ff3b4f]/8 p-3 font-mono text-xs leading-6 text-muted-foreground">
 									Check <span className="text-foreground">CHAT_API_KEY</span>{" "}
-									and{" "}
-									<span className="text-foreground">CHAT_MODEL</span>. If those
-									are correct, check provider quota or rate limits.
+									and <span className="text-foreground">CHAT_MODEL</span>. If
+									those are correct, check provider quota or rate limits.
 									{error.message ? (
 										<span className="mt-2 block text-[#ffb4c4]">
 											{error.message.slice(0, 180)}
