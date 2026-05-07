@@ -1,5 +1,5 @@
-import { SectionShell } from "@/components/layout/section-shell";
 import { ScanLabel } from "@/components/layout/scan-label";
+import { SectionShell } from "@/components/layout/section-shell";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { Badge } from "@/components/ui/badge";
@@ -13,8 +13,7 @@ export function FitSection() {
 			code="ENGINEERING_BRIEF"
 			title={
 				<>
-					What I actually{" "}
-					<span className="text-primary text-glow">bring to a team</span>.
+					What I actually <span className="text-primary text-glow">bring to a team</span>.
 				</>
 			}
 			subtitle="Frontend-heavy full-stack delivery, clean integrations, product ownership, refactoring discipline, and enough backend/platform range to move fast."
@@ -37,9 +36,7 @@ export function FitSection() {
 								Profile Signal
 							</div>
 							<h3 className="text-xl font-semibold">{item.title}</h3>
-							<p className="mt-3 min-h-28 text-sm leading-7 text-muted-foreground">
-								{item.copy}
-							</p>
+							<p className="mt-3 min-h-28 text-sm leading-7 text-muted-foreground">{item.copy}</p>
 							<div className="mt-4 flex flex-wrap gap-2">
 								{item.tags.map((tag) => (
 									<Badge

@@ -19,23 +19,14 @@ export function InteractiveBackdrop() {
 			frame = requestAnimationFrame(() => {
 				const x = event.clientX / window.innerWidth - 0.5;
 				const y = event.clientY / window.innerHeight - 0.5;
-				root.style.setProperty(
-					"--pointer-x",
-					String(Number((x * 2).toFixed(3))),
-				);
-				root.style.setProperty(
-					"--pointer-y",
-					String(Number((y * 2).toFixed(3))),
-				);
+				root.style.setProperty("--pointer-x", String(Number((x * 2).toFixed(3))));
+				root.style.setProperty("--pointer-y", String(Number((y * 2).toFixed(3))));
 			});
 		};
 
 		const syncScroll = () => {
 			const max = document.body.scrollHeight - window.innerHeight || 1;
-			root.style.setProperty(
-				"--scroll-ratio",
-				String(Number((window.scrollY / max).toFixed(3))),
-			);
+			root.style.setProperty("--scroll-ratio", String(Number((window.scrollY / max).toFixed(3))));
 		};
 
 		window.addEventListener("pointermove", syncPointer, { passive: true });

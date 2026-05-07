@@ -95,6 +95,7 @@ export default function RootLayout({
 				<script
 					type="application/ld+json"
 					suppressHydrationWarning
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD is generated from static site metadata.
 					dangerouslySetInnerHTML={{
 						__html: JSON.stringify({
 							...websiteJsonLd,

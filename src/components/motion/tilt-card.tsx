@@ -8,12 +8,7 @@ type TiltCardProps = React.HTMLAttributes<HTMLElement> & {
 	intensity?: number;
 };
 
-export function TiltCard({
-	children,
-	className,
-	intensity = 10,
-	...props
-}: TiltCardProps) {
+export function TiltCard({ children, className, intensity = 10, ...props }: TiltCardProps) {
 	const ref = useRef<HTMLElement>(null);
 	const reducedMotion = useReducedMotionPreference();
 	const [frameOpen, setFrameOpen] = useState(false);

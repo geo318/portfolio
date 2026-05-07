@@ -10,10 +10,7 @@ import { profile } from "@/content/portfolio";
 import { SuitLoader } from "@/features/hero-suit/components/suit-loader";
 
 const HeroSuitScene = dynamic(
-	() =>
-		import("@/features/hero-suit/scene/hero-suit-scene").then(
-			(mod) => mod.HeroSuitScene,
-		),
+	() => import("@/features/hero-suit/scene/hero-suit-scene").then((mod) => mod.HeroSuitScene),
 	{
 		ssr: false,
 		loading: () => <HeroSuitFallback />,
@@ -111,10 +108,7 @@ function DeferredHeroSuitScene() {
 
 	useEffect(() => {
 		const idleWindow = window as Window & {
-			requestIdleCallback?: (
-				callback: IdleRequestCallback,
-				options?: IdleRequestOptions,
-			) => number;
+			requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
 			cancelIdleCallback?: (handle: number) => void;
 		};
 

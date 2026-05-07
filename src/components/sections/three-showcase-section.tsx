@@ -1,13 +1,8 @@
 "use client";
 
-import {
-	useEffect,
-	useRef,
-	useState,
-	type PointerEvent,
-} from "react";
-import { SectionShell } from "@/components/layout/section-shell";
+import { type PointerEvent, useEffect, useRef, useState } from "react";
 import { ScanLabel } from "@/components/layout/scan-label";
+import { SectionShell } from "@/components/layout/section-shell";
 import { profile } from "@/content/portfolio";
 
 type OsApp = {
@@ -160,8 +155,7 @@ export function ThreeShowcaseSection() {
 			code="OS_SHELL_01"
 			title={
 				<>
-					CV signals as an{" "}
-					<span className="text-primary text-glow">interactive workstation</span>.
+					CV signals as an <span className="text-primary text-glow">interactive workstation</span>.
 				</>
 			}
 			subtitle="Open the processes and inspect CV work areas: advisor platforms, marketplace dashboards, integrations, product UI, delivery quality, and public code."
@@ -189,9 +183,7 @@ function ProjectsOS() {
 		const next = zTopRef.current + 1;
 		zTopRef.current = next;
 		setWindows((items) =>
-			items.map((item) =>
-				item.id === id ? { ...item, z: next, minimized: false } : item,
-			),
+			items.map((item) => (item.id === id ? { ...item, z: next, minimized: false } : item)),
 		);
 	};
 
@@ -203,9 +195,7 @@ function ProjectsOS() {
 			const existing = items.find((item) => item.id === id);
 			if (existing) {
 				return items.map((item) =>
-					item.id === id
-						? { ...item, z: next, minimized: false, maximized: false }
-						: item,
+					item.id === id ? { ...item, z: next, minimized: false, maximized: false } : item,
 				);
 			}
 
@@ -233,9 +223,7 @@ function ProjectsOS() {
 	const minimize = (id: string) => {
 		dragRef.current = null;
 		setWindows((items) =>
-			items.map((item) =>
-				item.id === id ? { ...item, minimized: true } : item,
-			),
+			items.map((item) => (item.id === id ? { ...item, minimized: true } : item)),
 		);
 	};
 
@@ -423,18 +411,11 @@ function ProjectsOS() {
 					const app = osApps.find((item) => item.id === windowState.id);
 					if (!app || windowState.minimized) return null;
 					const accent = accentClasses(app.accent);
-					const width = getRenderedWindowWidth(
-						windowState.w,
-						desktopSize.width,
-					);
+					const width = getRenderedWindowWidth(windowState.w, desktopSize.width);
 					const left = windowState.maximized
 						? 8
 						: desktopSize.width
-							? clamp(
-									windowState.x,
-									8,
-									Math.max(8, desktopSize.width - width - 8),
-								)
+							? clamp(windowState.x, 8, Math.max(8, desktopSize.width - width - 8))
 							: windowState.x;
 					const top = windowState.maximized
 						? 8
@@ -468,11 +449,7 @@ function ProjectsOS() {
 								}`}
 							>
 								<span className="flex shrink-0 items-center gap-2">
-									<MacButton
-										tone="close"
-										label="Close"
-										onClick={() => close(windowState.id)}
-									/>
+									<MacButton tone="close" label="Close" onClick={() => close(windowState.id)} />
 									<MacButton
 										tone="minimize"
 										label="Minimize"
@@ -480,9 +457,7 @@ function ProjectsOS() {
 									/>
 									<MacButton
 										tone="expand"
-										label={
-											windowState.maximized ? "Restore window" : "Expand window"
-										}
+										label={windowState.maximized ? "Restore window" : "Expand window"}
 										onClick={() => toggleMaximized(windowState.id)}
 									/>
 								</span>
@@ -505,9 +480,7 @@ function ProjectsOS() {
 									</span>
 									<span>{app.role}</span>
 								</div>
-								<p className="text-sm leading-7 text-muted-foreground">
-									{app.description}
-								</p>
+								<p className="text-sm leading-7 text-muted-foreground">{app.description}</p>
 								<div className="mt-4 flex flex-wrap gap-2">
 									{app.stack.map((item) => (
 										<span
@@ -625,13 +598,7 @@ function MacButton({
 	);
 }
 
-function StartAction({
-	label,
-	onClick,
-}: {
-	label: string;
-	onClick: () => void;
-}) {
+function StartAction({ label, onClick }: { label: string; onClick: () => void }) {
 	return (
 		<button
 			type="button"

@@ -4,13 +4,13 @@ import { Line, OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import {
-	type DomainNode,
-	domainEdges,
-	domainNodes,
-} from "@/features/three-lab/domain/domain-map";
+import { type DomainNode, domainEdges, domainNodes } from "@/features/three-lab/domain/domain-map";
 
 type ViewMode = "blueprint" | "solid" | "wireframe";
+type EdgePath = {
+	id: string;
+	points: THREE.Vector3[];
+};
 
 const modeLabels: Record<ViewMode, string> = {
 	blueprint: "Blueprint",
@@ -31,8 +31,7 @@ export function DomainMapScene() {
 	const [mode, setMode] = useState<ViewMode>("blueprint");
 	const [activeNodeId, setActiveNodeId] = useState("product");
 	const [pulseEnabled, setPulseEnabled] = useState(true);
-	const activeNode =
-		domainNodes.find((node) => node.id === activeNodeId) ?? domainNodes[0];
+	const activeNode = domainNodes.find((node) => node.id === activeNodeId) ?? domainNodes[0];
 
 	useEffect(() => {
 		const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -85,10 +84,7 @@ export function DomainMapScene() {
 				</div>
 				<div className="grid gap-2 text-muted-foreground">
 					<Metric label="Lazy boundary" value="Dynamic" />
-					<Metric
-						label="Motion guard"
-						value={reducedMotion ? "Reduce" : "Auto"}
-					/>
+					<Metric label="Motion guard" value={reducedMotion ? "Reduce" : "Auto"} />
 					<Metric label="GPU cleanup" value="Dispose" />
 					<Metric label="Interaction" value="Orbit" />
 				</div>
@@ -104,16 +100,8 @@ export function DomainMapScene() {
 				<color attach="background" args={["#05070c"]} />
 				<fog attach="fog" args={["#05070c", 6.8, 12]} />
 				<ambientLight intensity={0.52} />
-				<directionalLight
-					position={[1.5, 4.5, 3.5]}
-					intensity={2.4}
-					color="#dfffc4"
-				/>
-				<pointLight
-					position={[-3.5, 1.8, 3.2]}
-					intensity={18}
-					color="#9eff4f"
-				/>
+				<directionalLight position={[1.5, 4.5, 3.5]} intensity={2.4} color="#dfffc4" />
+				<pointLight position={[-3.5, 1.8, 3.2]} intensity={18} color="#9eff4f" />
 				<pointLight position={[3.4, 2.4, 2.4]} intensity={16} color="#39d7ff" />
 				<DomainMap
 					activeNodeId={activeNodeId}
@@ -163,17 +151,14 @@ export function DomainMapScene() {
 				<div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em]">
 					<span className="text-primary">Active Domain</span>
 					<span className="text-muted-foreground">
-						{String(
-							domainNodes.findIndex((node) => node.id === activeNode.id) + 1,
-						).padStart(2, "0")}
+						{String(domainNodes.findIndex((node) => node.id === activeNode.id) + 1).padStart(
+							2,
+							"0",
+						)}
 					</span>
 				</div>
-				<h3 className="text-2xl font-semibold text-foreground">
-					{activeNode.label}
-				</h3>
-				<p className="mt-2 text-sm leading-7 text-muted-foreground">
-					{activeNode.description}
-				</p>
+				<h3 className="text-2xl font-semibold text-foreground">{activeNode.label}</h3>
+				<p className="mt-2 text-sm leading-7 text-muted-foreground">{activeNode.description}</p>
 			</div>
 		</div>
 	);
@@ -201,16 +186,21 @@ function DomainMap({
 	reducedMotion: boolean;
 	setActiveNodeId: (nodeId: string) => void;
 }) {
-	const nodeById = useMemo(
-		() => new Map(domainNodes.map((node) => [node.id, node])),
-		[],
-	);
+	const nodeById = useMemo(() => new Map(domainNodes.map((node) => [node.id, node])), []);
 	const edgePaths = useMemo(
 		() =>
-			domainEdges.map(([fromId, toId], index) => {
-				const from = new THREE.Vector3(...nodeById.get(fromId)!.position);
-				const to = new THREE.Vector3(...nodeById.get(toId)!.position);
-				return makeEdgePath(from, to, index);
+			domainEdges.flatMap(([fromId, toId], index) => {
+				const fromNode = nodeById.get(fromId);
+				const toNode = nodeById.get(toId);
+
+				if (!fromNode || !toNode) return [];
+
+				const from = new THREE.Vector3(...fromNode.position);
+				const to = new THREE.Vector3(...toNode.position);
+				return {
+					id: `${fromId}-${toId}`,
+					points: makeEdgePath(from, to, index),
+				};
 			}),
 		[nodeById],
 	);
@@ -219,10 +209,10 @@ function DomainMap({
 		<group rotation={[0.03, -0.18, 0]} position={[0, -0.18, 0]}>
 			<OrbitalRings />
 			<BlueprintFloor />
-			{edgePaths.map((points, index) => (
+			{edgePaths.map((edge, index) => (
 				<Line
-					key={`${index}-${points[0].toArray().join("-")}`}
-					points={points}
+					key={edge.id}
+					points={edge.points}
 					color={index % 3 === 0 ? "#9eff4f" : "#39d7ff"}
 					lineWidth={1.35}
 					transparent
@@ -248,9 +238,7 @@ function makeEdgePath(from: THREE.Vector3, to: THREE.Vector3, index: number) {
 	const control = from
 		.clone()
 		.lerp(to, 0.5)
-		.add(
-			new THREE.Vector3(0, 0.26 + (index % 3) * 0.14, index % 2 ? 0.18 : -0.18),
-		);
+		.add(new THREE.Vector3(0, 0.26 + (index % 3) * 0.14, index % 2 ? 0.18 : -0.18));
 	const curve = new THREE.QuadraticBezierCurve3(from, control, to);
 	return curve.getPoints(24);
 }
@@ -294,7 +282,7 @@ function DomainNodeMesh({
 
 	return (
 		<group position={node.position}>
-			{/* Biome-ignore lint: This is the correct way to dispose of geometries and materials in Three.js */}
+			{/* biome-ignore lint/a11y/noStaticElementInteractions: R3F mesh pointer handlers are canvas interactions, not DOM controls. */}
 			<mesh
 				geometry={geometry}
 				material={material}
@@ -333,7 +321,7 @@ function getNodeColor(kind: DomainNode["kind"]) {
 	return "#9eff4f";
 }
 
-function EventPulses({ paths }: { paths: THREE.Vector3[][] }) {
+function EventPulses({ paths }: { paths: EdgePath[] }) {
 	const refs = useRef<THREE.Mesh[]>([]);
 	const geometry = useMemo(() => new THREE.SphereGeometry(0.045, 14, 14), []);
 	const material = useMemo(
@@ -349,7 +337,9 @@ function EventPulses({ paths }: { paths: THREE.Vector3[][] }) {
 	useFrame(({ clock }) => {
 		const elapsed = clock.elapsedTime;
 		refs.current.forEach((mesh, index) => {
-			const path = paths[index % paths.length];
+			const path = paths[index % paths.length]?.points;
+			if (!path) return;
+
 			const progress = (elapsed * 0.18 + index * 0.11) % 1;
 			const scaled = progress * (path.length - 1);
 			const current = Math.floor(scaled);
@@ -370,7 +360,7 @@ function EventPulses({ paths }: { paths: THREE.Vector3[][] }) {
 			{paths.flatMap((path, pathIndex) =>
 				[0, 1].map((offset) => (
 					<mesh
-						key={`${pathIndex}-${offset}`}
+						key={`${path.id}-${offset}`}
 						ref={(mesh) => {
 							if (mesh) refs.current[pathIndex * 2 + offset] = mesh;
 						}}
@@ -401,38 +391,27 @@ function OrbitalRings() {
 }
 
 function BlueprintFloor() {
-	const grid = useMemo(
-		() => new THREE.GridHelper(8, 28, "#39d7ff", "#182f38"),
-		[],
-	);
+	const grid = useMemo(() => new THREE.GridHelper(8, 28, "#39d7ff", "#182f38"), []);
 
 	useEffect(() => {
 		return () => {
 			grid.geometry.dispose();
-			const materials = Array.isArray(grid.material)
-				? grid.material
-				: [grid.material];
+			const materials = Array.isArray(grid.material) ? grid.material : [grid.material];
 
 			// biome-ignore lint: This is the correct way to dispose of materials in Three.js
 			materials.forEach((material) => material.dispose());
 		};
 	}, [grid]);
 
-	return (
-		<primitive object={grid} position={[0, -2.18, 0]} rotation={[0, 0, 0]} />
-	);
+	return <primitive object={grid} position={[0, -2.18, 0]} rotation={[0, 0, 0]} />;
 }
 
-function CameraInvalidator({
-	activeNodeId,
-	mode,
-}: {
-	activeNodeId: string;
-	mode: ViewMode;
-}) {
+function CameraInvalidator({ activeNodeId, mode }: { activeNodeId: string; mode: ViewMode }) {
 	const { invalidate } = useThree();
 
 	useEffect(() => {
+		const invalidationKey = `${activeNodeId}:${mode}`;
+		void invalidationKey;
 		invalidate();
 	}, [activeNodeId, invalidate, mode]);
 
@@ -443,11 +422,9 @@ function WebGLFallback() {
 	return (
 		<div className="blueprint-grid grid min-h-[640px] place-items-center p-6 sm:min-h-[720px]">
 			<div className="max-w-md border border-secondary/50 bg-background/85 p-5 font-mono text-sm leading-7 text-muted-foreground">
-				<div className="mb-2 uppercase tracking-[0.18em] text-secondary">
-					WebGL unavailable
-				</div>
-				This device/browser cannot initialize WebGL. The lab still keeps the
-				static notes and fallback boundary available.
+				<div className="mb-2 uppercase tracking-[0.18em] text-secondary">WebGL unavailable</div>
+				This device/browser cannot initialize WebGL. The lab still keeps the static notes and
+				fallback boundary available.
 			</div>
 		</div>
 	);

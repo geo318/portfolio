@@ -1,5 +1,5 @@
-import { SectionShell } from "@/components/layout/section-shell";
 import { ScanLabel } from "@/components/layout/scan-label";
+import { SectionShell } from "@/components/layout/section-shell";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { applicationNotes } from "@/content/portfolio";
@@ -12,8 +12,7 @@ export function ApplicationNotes() {
 			code="ANSWERS"
 			title={
 				<>
-					Positioning notes.{" "}
-					<span className="text-primary text-glow">Plain and useful</span>.
+					Positioning notes. <span className="text-primary text-glow">Plain and useful</span>.
 				</>
 			}
 			scanLabel="Static Notes"
@@ -35,9 +34,7 @@ export function ApplicationNotes() {
 								Portfolio Note
 							</div>
 							<h3 className="text-xl font-semibold">{note.title}</h3>
-							<p className="mt-4 text-sm leading-7 text-muted-foreground">
-								{note.copy}
-							</p>
+							<p className="mt-4 text-sm leading-7 text-muted-foreground">{note.copy}</p>
 						</TiltCard>
 					</Reveal>
 				))}

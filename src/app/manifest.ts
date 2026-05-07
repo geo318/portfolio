@@ -4,8 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
 	return {
 		name: "Giorgi Lomidze Portfolio",
 		short_name: "GL Portfolio",
-		description:
-			"Full-stack software engineering portfolio for Giorgi Lomidze.",
+		description: "Full-stack software engineering portfolio for Giorgi Lomidze.",
 		start_url: "/",
 		scope: "/",
 		display: "standalone",

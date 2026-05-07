@@ -1,6 +1,6 @@
 import { BriefcaseBusiness, Code2, Download, Mail, Phone } from "lucide-react";
-import { SectionShell } from "@/components/layout/section-shell";
 import { ScanLabel } from "@/components/layout/scan-label";
+import { SectionShell } from "@/components/layout/section-shell";
 import { CyberButton } from "@/components/ui/cyber-button";
 import { profile } from "@/content/portfolio";
 
@@ -12,8 +12,7 @@ export function ContactSection() {
 			code="HANDSHAKE"
 			title={
 				<>
-					Contact and{" "}
-					<span className="text-primary text-glow">full CV</span>.
+					Contact and <span className="text-primary text-glow">full CV</span>.
 				</>
 			}
 			subtitle="The CV has the full timeline. Best fit: frontend-heavy full-stack product work with React, Next.js, TypeScript, integrations, and maintainable delivery."

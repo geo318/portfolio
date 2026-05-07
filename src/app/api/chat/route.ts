@@ -1,9 +1,5 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import {
-	convertToModelMessages,
-	streamText,
-	type UIMessage,
-} from "ai";
+import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { giorgiChatSystemPrompt } from "@/content/chat-profile";
 
 export const maxDuration = 30;
@@ -15,10 +11,7 @@ function getChatModel() {
 }
 
 function getChatApiKey() {
-	return (
-		process.env.CHAT_API_KEY?.trim() ||
-		process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim()
-	);
+	return process.env.CHAT_API_KEY?.trim() || process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
 }
 
 export async function POST(request: Request) {

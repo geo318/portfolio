@@ -10,12 +10,7 @@ export function PortfolioFrame({ children }: { children: React.ReactNode }) {
 	const scanEnabled = useScanMode((state) => state.enabled);
 
 	return (
-		<main
-			className={cn(
-				"min-h-screen text-foreground",
-				scanEnabled && "architecture-scan",
-			)}
-		>
+		<main className={cn("min-h-screen text-foreground", scanEnabled && "architecture-scan")}>
 			<InteractiveBackdrop />
 			<PerformanceMonitor />
 			<div className="pointer-events-none fixed inset-0 z-60 hidden scanline architecture-scan:block" />
@@ -26,9 +21,7 @@ export function PortfolioFrame({ children }: { children: React.ReactNode }) {
 					<span>
 						<span className="text-primary">GL_</span> Giorgi Lomidze / Portfolio
 					</span>
-					<span>
-						CV-backed copy / Next.js, TypeScript, React, and product systems.
-					</span>
+					<span>CV-backed copy / Next.js, TypeScript, React, and product systems.</span>
 				</div>
 			</footer>
 		</main>

@@ -1,6 +1,6 @@
 import { Code2 } from "lucide-react";
-import { SectionShell } from "@/components/layout/section-shell";
 import { ScanLabel } from "@/components/layout/scan-label";
+import { SectionShell } from "@/components/layout/section-shell";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { Badge } from "@/components/ui/badge";
@@ -14,8 +14,7 @@ export function SelectedWorkSection() {
 			code="CASE_STUDIES"
 			title={
 				<>
-					Selected projects from{" "}
-					<span className="text-primary text-glow">the CV</span>.
+					Selected projects from <span className="text-primary text-glow">the CV</span>.
 				</>
 			}
 			subtitle="Advisor platforms, marketplaces, communication tooling, financial integrations, ERP work, and a personal multi-tenant marketplace."
@@ -35,9 +34,7 @@ export function SelectedWorkSection() {
 								</ScanLabel>
 							) : null}
 							<div className="mb-4 flex items-start justify-between gap-4">
-								<h3 className="text-2xl font-semibold leading-tight">
-									{project.title}
-								</h3>
+								<h3 className="text-2xl font-semibold leading-tight">{project.title}</h3>
 								{project.github ? (
 									<a
 										href={project.github}
@@ -52,16 +49,12 @@ export function SelectedWorkSection() {
 							</div>
 							{project.company || project.role ? (
 								<div className="mb-4 flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-									{project.company ? (
-										<span className="text-primary">{project.company}</span>
-									) : null}
+									{project.company ? <span className="text-primary">{project.company}</span> : null}
 									{project.company && project.role ? <span>/</span> : null}
 									{project.role ? <span>{project.role}</span> : null}
 								</div>
 							) : null}
-							<p className="text-sm leading-7 text-muted-foreground">
-								{project.copy}
-							</p>
+							<p className="text-sm leading-7 text-muted-foreground">{project.copy}</p>
 							<div className="mt-auto flex flex-wrap gap-2 pt-6">
 								{project.tags.map((tag) => (
 									<Badge

@@ -43,14 +43,8 @@ export function HeroSuitScene() {
 				}}
 			>
 				<ambientLight intensity={1.45} />
-				<hemisphereLight
-					args={["#d7f7ff", "#1b2130", 1.2]}
-				/>
-				<directionalLight
-					color="#f8ffb8"
-					intensity={5.2}
-					position={[-2.5, 3, 4]}
-				/>
+				<hemisphereLight args={["#d7f7ff", "#1b2130", 1.2]} />
+				<directionalLight color="#f8ffb8" intensity={5.2} position={[-2.5, 3, 4]} />
 				<directionalLight color="#ffffff" intensity={2.8} position={[2, 1.5, 3]} />
 				<pointLight color="#39d7ff" intensity={24} position={[-3, -0.8, 3]} />
 				<pointLight color="#9eff4f" intensity={12} position={[2.8, 1.8, 2.4]} />
@@ -78,13 +72,7 @@ function SuitCanvasLoader() {
 	);
 }
 
-function SuitRig({
-	compact,
-	reducedMotion,
-}: {
-	compact: boolean;
-	reducedMotion: boolean;
-}) {
+function SuitRig({ compact, reducedMotion }: { compact: boolean; reducedMotion: boolean }) {
 	const groupRef = useRef<THREE.Group>(null);
 	const { scene } = useGLTF(SUIT_MODEL_URL);
 	const scale = compact ? 1.12 : 1.36;
@@ -107,11 +95,7 @@ function SuitRig({
 	});
 
 	return (
-		<group
-			ref={groupRef}
-			position={compact ? [0.06, -0.02, 0] : [0.48, 0.02, 0]}
-			scale={scale}
-		>
+		<group ref={groupRef} position={compact ? [0.06, -0.02, 0] : [0.48, 0.02, 0]} scale={scale}>
 			<Center rotation={[0, -0.36, 0]}>
 				<primitive object={scene} />
 			</Center>

@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
-import { SectionShell } from "@/components/layout/section-shell";
 import { ScanLabel } from "@/components/layout/scan-label";
+import { SectionShell } from "@/components/layout/section-shell";
 import { Reveal } from "@/components/motion/reveal";
 import { performanceHabits } from "@/content/portfolio";
 
@@ -12,8 +12,7 @@ export function PerformanceSection() {
 			code="PROFILING_BOARD"
 			title={
 				<>
-					Quality habits that show up{" "}
-					<span className="text-secondary cyan-glow">in delivery</span>.
+					Quality habits that show up <span className="text-secondary cyan-glow">in delivery</span>.
 				</>
 			}
 			subtitle="Recurring delivery habits: typed boundaries, refactoring, SEO, deployment, API tests, and maintainability."

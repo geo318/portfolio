@@ -57,9 +57,7 @@ function clamp(value: number, min: number, max: number) {
 }
 
 function glyphFor(column: number, row: number, tick: number) {
-	const index = Math.abs(
-		(column * 13 + row * 17 + tick) % MATRIX_GLYPHS.length,
-	);
+	const index = Math.abs((column * 13 + row * 17 + tick) % MATRIX_GLYPHS.length);
 	return MATRIX_GLYPHS[index];
 }
 
@@ -98,9 +96,7 @@ export function PixelMatrixBackdrop() {
 		let planets: Planet[] = [];
 
 		const buildScene = () => {
-			const random = seededRandom(
-				7001 + Math.round(width * 0.17) + Math.round(height * 0.29),
-			);
+			const random = seededRandom(7001 + Math.round(width * 0.17) + Math.round(height * 0.29));
 			const starCount = width < 760 ? 140 : 260;
 
 			stars = Array.from({ length: starCount }, () => {
@@ -108,12 +104,7 @@ export function PixelMatrixBackdrop() {
 				return {
 					alpha: 0.34 + random() * 0.66,
 					size: 0.42 + random() * 1.8,
-					tint:
-						tintRoll > 0.66
-							? "cyan"
-							: tintRoll > 0.48
-								? "green"
-									: "white",
+					tint: tintRoll > 0.66 ? "cyan" : tintRoll > 0.48 ? "green" : "white",
 					twinkle: random() * Math.PI * 2,
 					x: random() * 2.35 - 1.18,
 					y: random() * 2.2 - 1.1,
@@ -216,19 +207,11 @@ export function PixelMatrixBackdrop() {
 
 			for (const star of stars) {
 				const depth = 1 / star.z;
-				const px =
-					width * 0.5 +
-					star.x * width * 0.52 * depth -
-					pointerX * (1.62 - star.z) * 62;
-				const py =
-					height * 0.5 +
-					star.y * height * 0.5 * depth -
-					pointerY * (1.62 - star.z) * 48;
+				const px = width * 0.5 + star.x * width * 0.52 * depth - pointerX * (1.62 - star.z) * 62;
+				const py = height * 0.5 + star.y * height * 0.5 * depth - pointerY * (1.62 - star.z) * 48;
 				if (px < -6 || px > width + 6 || py < -6 || py > height + 6) continue;
 
-				const pulse =
-					0.72 +
-					Math.sin(time * (0.45 + star.size * 0.12) + star.twinkle) * 0.28;
+				const pulse = 0.72 + Math.sin(time * (0.45 + star.size * 0.12) + star.twinkle) * 0.28;
 				const alpha = clamp(star.alpha * pulse * (1.7 - star.z), 0.08, 0.96);
 				const color =
 					star.tint === "cyan"
@@ -264,14 +247,7 @@ export function PixelMatrixBackdrop() {
 			ctx.save();
 			ctx.globalCompositeOperation = "screen";
 
-			const corona = ctx.createRadialGradient(
-				sunX,
-				sunY,
-				0,
-				sunX,
-				sunY,
-				coronaRadius,
-			);
+			const corona = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, coronaRadius);
 			corona.addColorStop(0, "rgba(255,250,206,0.98)");
 			corona.addColorStop(0.035, "rgba(248,255,79,0.56)");
 			corona.addColorStop(0.12, "rgba(57,215,255,0.24)");
@@ -297,15 +273,7 @@ export function PixelMatrixBackdrop() {
 			for (const planet of planets) {
 				const orbitAlpha = planet.orbitX > 600 * scale ? 0.145 : 0.17;
 				ctx.beginPath();
-				ctx.ellipse(
-					0,
-					20 * scale,
-					planet.orbitX,
-					planet.orbitY,
-					0,
-					Math.PI * 0.08,
-					Math.PI * 1.82,
-				);
+				ctx.ellipse(0, 20 * scale, planet.orbitX, planet.orbitY, 0, Math.PI * 0.08, Math.PI * 1.82);
 				ctx.strokeStyle = `rgba(57,215,255,${orbitAlpha})`;
 				ctx.lineWidth = 1;
 				ctx.stroke();
@@ -324,13 +292,7 @@ export function PixelMatrixBackdrop() {
 					? planet.color.replaceAll("0.9", "0.48").replaceAll("0.8", "0.44")
 					: planet.color;
 				ctx.beginPath();
-				ctx.arc(
-					x,
-					y,
-					planet.radius * scale * (farSide ? 0.72 : 1),
-					0,
-					Math.PI * 2,
-				);
+				ctx.arc(x, y, planet.radius * scale * (farSide ? 0.72 : 1), 0, Math.PI * 2);
 				ctx.fill();
 			}
 
@@ -358,14 +320,7 @@ export function PixelMatrixBackdrop() {
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
 
-			const halo = ctx.createRadialGradient(
-				cursor.x,
-				cursor.y,
-				0,
-				cursor.x,
-				cursor.y,
-				radius,
-			);
+			const halo = ctx.createRadialGradient(cursor.x, cursor.y, 0, cursor.x, cursor.y, radius);
 			halo.addColorStop(0, `rgba(158,255,79,${0.08 * cursor.matrixIntensity})`);
 			halo.addColorStop(0.42, `rgba(57,215,255,${0.05 * cursor.matrixIntensity})`);
 			halo.addColorStop(1, "rgba(0,0,0,0)");
@@ -399,9 +354,7 @@ export function PixelMatrixBackdrop() {
 					);
 					const hot = radialStrength > 0.72 && (row + column + tick) % 5 === 0;
 
-					ctx.fillStyle = hot
-						? `rgba(248,255,79,${alpha})`
-						: `rgba(158,255,79,${alpha})`;
+					ctx.fillStyle = hot ? `rgba(248,255,79,${alpha})` : `rgba(158,255,79,${alpha})`;
 					ctx.fillText(glyph, x, y);
 
 					if (hot) {
@@ -412,11 +365,9 @@ export function PixelMatrixBackdrop() {
 			}
 
 			const pixelGap = 10;
-			const startX =
-				Math.floor((cursor.x - radius * 0.8) / pixelGap) * pixelGap;
+			const startX = Math.floor((cursor.x - radius * 0.8) / pixelGap) * pixelGap;
 			const endX = cursor.x + radius * 0.8;
-			const startY =
-				Math.floor((cursor.y - radius * 0.8) / pixelGap) * pixelGap;
+			const startY = Math.floor((cursor.y - radius * 0.8) / pixelGap) * pixelGap;
 			const endY = cursor.y + radius * 0.8;
 
 			for (let x = startX; x <= endX; x += pixelGap) {
@@ -466,14 +417,7 @@ export function PixelMatrixBackdrop() {
 
 			const head = trail.at(-1);
 			if (head) {
-				const glow = ctx.createRadialGradient(
-					head.x,
-					head.y,
-					0,
-					head.x,
-					head.y,
-					30,
-				);
+				const glow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 30);
 				glow.addColorStop(0, `rgba(248,255,79,${0.32 * head.alpha})`);
 				glow.addColorStop(0.35, `rgba(57,215,255,${0.2 * head.alpha})`);
 				glow.addColorStop(1, "rgba(0,0,0,0)");
@@ -519,8 +463,7 @@ export function PixelMatrixBackdrop() {
 
 		const loop = () => {
 			const now = performance.now();
-			const activeEffects =
-				trail.length > 0 || cursor.pressed || cursor.matrixIntensity > 0.015;
+			const activeEffects = trail.length > 0 || cursor.pressed || cursor.matrixIntensity > 0.015;
 			const targetInterval = activeEffects ? 33 : 58;
 			if (now - lastRenderAt >= targetInterval) {
 				render();

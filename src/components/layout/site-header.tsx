@@ -11,11 +11,7 @@ export function SiteHeader() {
 	return (
 		<header className="sticky top-0 z-50 border-b border-border/60 backdrop-blur-xl">
 			<div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-				<a
-					href="#top"
-					className="flex items-center gap-3"
-					aria-label="Giorgi Lomidze home"
-				>
+				<a href="#top" className="flex items-center gap-3" aria-label="Giorgi Lomidze home">
 					<span className="brand-mark corner-brackets grid size-9 place-items-center font-mono text-sm font-bold text-primary text-glow">
 						<span className="brand-mark-label">GL</span>
 					</span>
@@ -27,11 +23,7 @@ export function SiteHeader() {
 
 				<nav className="hidden items-center gap-5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground lg:flex">
 					{navLinks.map((link) => (
-						<a
-							key={link.href}
-							href={link.href}
-							className="transition hover:text-primary"
-						>
+						<a key={link.href} href={link.href} className="transition hover:text-primary">
 							{link.label}
 						</a>
 					))}

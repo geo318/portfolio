@@ -41,27 +41,18 @@ export function SectionShell({
 	const headerY = useTransform(smooth, [0, 0.46, 1], [74, 0, -58]);
 	const contentY = useTransform(smooth, [0, 0.48, 1], [118, 0, -82]);
 	const contentScale = useTransform(smooth, [0, 0.48, 1], [0.94, 1, 0.985]);
-	const contentOpacity = useTransform(
-		smooth,
-		[0, 0.22, 0.78, 1],
-		[0.58, 1, 1, 0.72],
-	);
+	const contentOpacity = useTransform(smooth, [0, 0.22, 0.78, 1], [0.58, 1, 1, 0.72]);
 
 	return (
 		<motion.section
 			ref={ref}
 			id={id}
-			className={cn(
-				"super-parallax-section relative border-t border-border/40",
-				className,
-			)}
+			className={cn("super-parallax-section relative border-t border-border/40", className)}
 		>
 			<div className="section-depth-plane" aria-hidden="true" />
 			<motion.div
 				style={
-					reducedMotion
-						? undefined
-						: { opacity: contentOpacity, scale: contentScale, y: contentY }
+					reducedMotion ? undefined : { opacity: contentOpacity, scale: contentScale, y: contentY }
 				}
 				className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28"
 			>

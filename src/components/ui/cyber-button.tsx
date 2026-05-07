@@ -26,11 +26,7 @@ export function CyberButton({
 	if (asChild) {
 		const child = React.Children.only(children);
 
-		if (
-			!React.isValidElement<{ className?: string; children?: React.ReactNode }>(
-				child,
-			)
-		) {
+		if (!React.isValidElement<{ className?: string; children?: React.ReactNode }>(child)) {
 			return null;
 		}
 

@@ -1,5 +1,5 @@
-import { SectionShell } from "@/components/layout/section-shell";
 import { ScanLabel } from "@/components/layout/scan-label";
+import { SectionShell } from "@/components/layout/section-shell";
 import { Reveal } from "@/components/motion/reveal";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { experience } from "@/content/portfolio";
@@ -12,8 +12,7 @@ export function PropertySection() {
 			code="TIMELINE"
 			title={
 				<>
-					Professional timeline,{" "}
-					<span className="text-primary text-glow">without filler</span>.
+					Professional timeline, <span className="text-primary text-glow">without filler</span>.
 				</>
 			}
 			subtitle="The CV condensed: companies, responsibilities, and the systems I touched."
@@ -37,9 +36,7 @@ export function PropertySection() {
 									<div className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
 										{item.period}
 									</div>
-									<h3 className="mt-2 text-2xl font-semibold">
-										{item.company}
-									</h3>
+									<h3 className="mt-2 text-2xl font-semibold">{item.company}</h3>
 								</div>
 								<div className="max-w-72 text-right font-mono text-[10px] uppercase leading-5 tracking-[0.16em] text-muted-foreground">
 									{item.role}

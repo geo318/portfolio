@@ -1,5 +1,5 @@
-import { SectionShell } from "@/components/layout/section-shell";
 import { ScanLabel } from "@/components/layout/scan-label";
+import { SectionShell } from "@/components/layout/section-shell";
 import { TiltCard } from "@/components/motion/tilt-card";
 import { architectureLayers } from "@/content/portfolio";
 
@@ -11,8 +11,7 @@ export function ArchitectureSection() {
 			code="BOUNDARY_MAP"
 			title={
 				<>
-					How I keep product code{" "}
-					<span className="text-primary text-glow">changeable</span>.
+					How I keep product code <span className="text-primary text-glow">changeable</span>.
 				</>
 			}
 			subtitle="A practical map of typed UI, service integration, DTO mapping, validation, and platform constraints."
@@ -32,11 +31,7 @@ export function ArchitectureSection() {
 							intensity={5}
 						>
 							<div className="mb-4 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em]">
-								<span
-									className={
-										index % 2 === 0 ? "text-primary" : "text-secondary"
-									}
-								>
+								<span className={index % 2 === 0 ? "text-primary" : "text-secondary"}>
 									L{index + 1}
 								</span>
 								<span className="text-muted-foreground">{layer.title}</span>

@@ -65,19 +65,14 @@ function PerformanceStat({ label, value, max, ratio, tone }: RuntimeStat) {
 	return (
 		<div>
 			<div className="mb-1 flex items-end justify-between gap-3">
-				<span className="text-xs leading-none text-muted-foreground">
-					{label}
-				</span>
+				<span className="text-xs leading-none text-muted-foreground">{label}</span>
 				<span className="font-mono text-xs leading-none">
 					<span className={colorClass}>{value}</span>{" "}
 					<span className="text-muted-foreground">/ {max}</span>
 				</span>
 			</div>
 			<div className="h-1 bg-secondary/10">
-				<div
-					className={`h-full ${barClass}`}
-					style={{ width: `${Math.round(ratio * 100)}%` }}
-				/>
+				<div className={`h-full ${barClass}`} style={{ width: `${Math.round(ratio * 100)}%` }} />
 			</div>
 		</div>
 	);
@@ -124,9 +119,7 @@ function useRuntimePerformance(enabled: boolean) {
 				setSample({
 					fps: Math.round(frame / elapsedSeconds),
 					frameTime: totalFrameTime / Math.max(1, frames),
-					heapUsedMb: memory
-						? memory.usedJSHeapSize / 1024 / 1024
-						: estimateMemoryFromDom(),
+					heapUsedMb: memory ? memory.usedJSHeapSize / 1024 / 1024 : estimateMemoryFromDom(),
 					heapLimitMb: memory ? memory.jsHeapSizeLimit / 1024 / 1024 : 1024,
 					domNodes: document.getElementsByTagName("*").length,
 					ready: true,
@@ -172,10 +165,7 @@ function useRuntimePerformance(enabled: boolean) {
 		{
 			label: "Memory",
 			value: `${Math.round(sample.heapUsedMb)}MB`,
-			max:
-				heapMax >= 1024
-					? `${Math.round(heapMax / 1024)}GB`
-					: `${Math.round(heapMax)}MB`,
+			max: heapMax >= 1024 ? `${Math.round(heapMax / 1024)}GB` : `${Math.round(heapMax)}MB`,
 			ratio: clamp(sample.heapUsedMb / heapMax, 0, 1),
 			tone: "primary" as const,
 		},

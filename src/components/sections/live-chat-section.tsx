@@ -29,10 +29,7 @@ function normalizePrompt(value: string) {
 	return value.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-function createTextMessage(
-	role: "user" | "assistant",
-	text: string,
-): UIMessage {
+function createTextMessage(role: "user" | "assistant", text: string): UIMessage {
 	return {
 		id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
 		role,
@@ -56,10 +53,7 @@ function trimCache(cache: Map<string, string>) {
 }
 
 export function LiveChatSection() {
-	const transport = useMemo(
-		() => new DefaultChatTransport({ api: "/api/chat" }),
-		[],
-	);
+	const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
 	const [input, setInput] = useState("");
 	const { messages, sendMessage, setMessages, status, error, stop } = useChat({
 		transport,
@@ -76,9 +70,13 @@ export function LiveChatSection() {
 	const lastSubmittedPromptRef = useRef<string | null>(null);
 	const lastCachedAssistantIdRef = useRef<string | null>(null);
 	const lastViewportScrollAtRef = useRef(0);
+	const latestMessageText = useMemo(
+		() => messages.map((message) => getMessageText(message)).join("\n"),
+		[messages],
+	);
 
 	useEffect(() => {
-		if (!chatHasActivityRef.current) return;
+		if (!chatHasActivityRef.current || latestMessageText.length === 0) return;
 
 		messagesEndRef.current?.scrollIntoView({
 			block: "end",
@@ -95,7 +93,7 @@ export function LiveChatSection() {
 				});
 			}
 		}
-	}, [messages, status]);
+	}, [latestMessageText, status]);
 
 	useEffect(() => {
 		if (status !== "ready") return;
@@ -173,8 +171,7 @@ export function LiveChatSection() {
 			code="TERM_AI"
 			title={
 				<>
-					Ask me directly.{" "}
-					<span className="text-primary text-glow">CV-grounded answers</span>.
+					Ask me directly. <span className="text-primary text-glow">CV-grounded answers</span>.
 				</>
 			}
 			subtitle="The server prompt answers in my voice using CV, LinkedIn handle, GitHub repos, projects, stack, contact links, and claim boundaries."
@@ -194,9 +191,7 @@ export function LiveChatSection() {
 						<span className="size-3 rounded-full bg-secondary" />
 						<span className="size-3 rounded-full bg-primary" />
 					</div>
-					<span className="hidden text-secondary sm:inline">
-						~/giorgi/live-profile-chat.ts
-					</span>
+					<span className="hidden text-secondary sm:inline">~/giorgi/live-profile-chat.ts</span>
 					<span>UTF-8 / CHAT API</span>
 				</div>
 
@@ -207,8 +202,8 @@ export function LiveChatSection() {
 							<div>
 								<p className="text-foreground"># Live CV terminal</p>
 								<p className="mt-3">
-									This answers as me from a server-side prompt grounded in CV,
-									LinkedIn, GitHub, projects, stack, and contact details.
+									This answers as me from a server-side prompt grounded in CV, LinkedIn, GitHub,
+									projects, stack, and contact details.
 								</p>
 							</div>
 							<ul className="space-y-2">
@@ -252,13 +247,11 @@ export function LiveChatSection() {
 							{waitingForFirstToken ? <ThinkingBubble /> : null}
 							{error ? (
 								<div className="border border-[#ff3b4f]/40 bg-[#ff3b4f]/8 p-3 font-mono text-xs leading-6 text-muted-foreground">
-									Check <span className="text-foreground">CHAT_API_KEY</span>{" "}
-									and <span className="text-foreground">CHAT_MODEL</span>. If
-									those are correct, check provider quota or rate limits.
+									Check <span className="text-foreground">CHAT_API_KEY</span> and{" "}
+									<span className="text-foreground">CHAT_MODEL</span>. If those are correct, check
+									provider quota or rate limits.
 									{error.message ? (
-										<span className="mt-2 block text-[#ffb4c4]">
-											{error.message.slice(0, 180)}
-										</span>
+										<span className="mt-2 block text-[#ffb4c4]">{error.message.slice(0, 180)}</span>
 									) : null}
 								</div>
 							) : null}
@@ -292,17 +285,12 @@ export function LiveChatSection() {
 									onClick={status === "streaming" ? stop : undefined}
 									disabled={waitingForFirstToken || (!busy && !canSubmit)}
 									className="inline-flex min-w-12 items-center justify-center border border-primary/55 bg-primary/10 px-4 text-primary transition hover:bg-primary/18 disabled:cursor-not-allowed disabled:opacity-45"
-									aria-label={
-										status === "streaming" ? "Stop response" : "Send message"
-									}
+									aria-label={status === "streaming" ? "Stop response" : "Send message"}
 								>
 									{status === "streaming" ? (
 										<Square className="size-4" aria-hidden="true" />
 									) : waitingForFirstToken ? (
-										<LoaderCircle
-											className="size-4 animate-spin"
-											aria-hidden="true"
-										/>
+										<LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
 									) : (
 										<Send className="size-4" aria-hidden="true" />
 									)}
