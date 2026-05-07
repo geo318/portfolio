@@ -2,8 +2,8 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { Send, Square } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { LoaderCircle, Send, Square } from "lucide-react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { SectionShell } from "@/components/layout/section-shell";
 import { chatSuggestions } from "@/content/chat-profile";
 import { profile } from "@/content/portfolio";
@@ -16,11 +16,43 @@ const initialMessages: UIMessage[] = [
 		parts: [
 			{
 				type: "text",
-				text: "Ask me about frontend architecture, real-time UI, Next.js/React work, DDD boundaries, the WebGL lab, or whether I fit a graphics-heavy product team.",
+				text: "Ask me about my CV, Alpheya, Proxied, React/Next.js, backend/API work, public GitHub repos, or contact details.",
 			},
 		],
 	},
 ];
+
+const CHAT_CACHE_LIMIT = 24;
+
+function normalizePrompt(value: string) {
+	return value.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function createTextMessage(
+	role: "user" | "assistant",
+	text: string,
+): UIMessage {
+	return {
+		id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+		role,
+		parts: [{ type: "text", text }],
+	};
+}
+
+function getMessageText(message: UIMessage) {
+	return message.parts
+		.filter((part) => part.type === "text")
+		.map((part) => part.text)
+		.join("");
+}
+
+function trimCache(cache: Map<string, string>) {
+	while (cache.size > CHAT_CACHE_LIMIT) {
+		const [firstKey] = cache.keys();
+		if (!firstKey) return;
+		cache.delete(firstKey);
+	}
+}
 
 export function LiveChatSection() {
 	const transport = useMemo(
@@ -28,24 +60,102 @@ export function LiveChatSection() {
 		[],
 	);
 	const [input, setInput] = useState("");
-	const { messages, sendMessage, status, error, stop } = useChat({
+	const { messages, sendMessage, setMessages, status, error, stop } = useChat({
 		transport,
 		messages: initialMessages,
-		experimental_throttle: 60,
+		experimental_throttle: 24,
 	});
 	const busy = status === "submitted" || status === "streaming";
+	const waitingForFirstToken = status === "submitted";
+	const canSubmit = input.trim().length > 0 && !busy;
+	const chatPanelRef = useRef<HTMLDivElement>(null);
+	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const responseCacheRef = useRef(new Map<string, string>());
+	const lastSubmittedPromptRef = useRef<string | null>(null);
+	const lastCachedAssistantIdRef = useRef<string | null>(null);
+	const lastViewportScrollAtRef = useRef(0);
+
+	useEffect(() => {
+		messagesEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+
+		if (status === "submitted" || status === "streaming") {
+			const now = performance.now();
+			if (now - lastViewportScrollAtRef.current > 650) {
+				lastViewportScrollAtRef.current = now;
+				chatPanelRef.current?.scrollIntoView({
+					block: "nearest",
+					behavior: "smooth",
+				});
+			}
+		}
+	}, [messages, status]);
+
+	useEffect(() => {
+		if (status !== "ready") return;
+
+		const cacheKey = lastSubmittedPromptRef.current;
+		if (!cacheKey) return;
+
+		const assistantMessage = [...messages]
+			.reverse()
+			.find((message) => message.role === "assistant");
+
+		if (
+			!assistantMessage ||
+			assistantMessage.id === "boot" ||
+			assistantMessage.id === lastCachedAssistantIdRef.current
+		) {
+			return;
+		}
+
+		const assistantText = getMessageText(assistantMessage).trim();
+		if (!assistantText) return;
+
+		responseCacheRef.current.set(cacheKey, assistantText);
+		trimCache(responseCacheRef.current);
+		lastCachedAssistantIdRef.current = assistantMessage.id;
+		lastSubmittedPromptRef.current = null;
+	}, [messages, status]);
+
+	const sendCachedOrNetwork = async (text: string) => {
+		if (!text || busy) return;
+		const cacheKey = normalizePrompt(text);
+		const cachedResponse = responseCacheRef.current.get(cacheKey);
+
+		if (cachedResponse) {
+			setMessages((currentMessages) => [
+				...currentMessages,
+				createTextMessage("user", text),
+				createTextMessage("assistant", cachedResponse),
+			]);
+			window.requestAnimationFrame(() => {
+				chatPanelRef.current?.scrollIntoView({
+					block: "nearest",
+					behavior: "smooth",
+				});
+				messagesEndRef.current?.scrollIntoView({
+					block: "end",
+					behavior: "smooth",
+				});
+			});
+			return;
+		}
+
+		lastSubmittedPromptRef.current = cacheKey;
+		await sendMessage({ text });
+	};
 
 	const submit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const text = input.trim();
 		if (!text || busy) return;
 		setInput("");
-		await sendMessage({ text });
+		await sendCachedOrNetwork(text);
 	};
 
 	const sendSuggestion = async (text: string) => {
 		if (busy) return;
-		await sendMessage({ text });
+		await sendCachedOrNetwork(text);
 	};
 
 	return (
@@ -55,14 +165,17 @@ export function LiveChatSection() {
 			code="TERM_AI"
 			title={
 				<>
-					Ask the portfolio.{" "}
-					<span className="text-primary text-glow">Answers like me</span>.
+					Ask me directly.{" "}
+					<span className="text-primary text-glow">CV-grounded answers</span>.
 				</>
 			}
-			subtitle="Prepared for provider-backed live chat through a server route. The prompt is grounded in portfolio content and tuned to answer in my voice without overstating experience."
+			subtitle="The server prompt answers in my voice using CV, LinkedIn handle, GitHub repos, projects, stack, contact links, and claim boundaries."
 			scanLabel="AI Boundary"
 		>
-			<div className="corner-brackets scan-target relative overflow-hidden border border-primary/25 bg-background/80 shadow-[0_24px_100px_rgb(0_0_0/0.32)] backdrop-blur">
+			<div
+				ref={chatPanelRef}
+				className="corner-brackets scan-target relative overflow-hidden border border-primary/25 bg-background/80 shadow-[0_24px_100px_rgb(0_0_0/0.32)] backdrop-blur"
+			>
 				<div className="flex items-center justify-between border-b border-border/70 bg-card/80 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
 					<div className="flex items-center gap-2">
 						<span className="size-3 rounded-full bg-[#ff3b4f]" />
@@ -80,23 +193,22 @@ export function LiveChatSection() {
 						<p className="text-primary">&gt; cat chat-readme.md</p>
 						<div className="mt-6 space-y-5">
 							<div>
-								<p className="text-foreground"># Live profile terminal</p>
+								<p className="text-foreground"># Live CV terminal</p>
 								<p className="mt-3">
-									This is ready for a server-side chat route. It answers from a
-									server-side prompt built around my portfolio content, contact
-									links, code sample, and honesty boundaries.
+									This answers as me from a server-side prompt grounded in CV,
+									LinkedIn, GitHub, projects, stack, and contact details.
 								</p>
 							</div>
 							<ul className="space-y-2">
-								<li>[1] First-person answers.</li>
+								<li>[1] Answers in my voice.</li>
 								<li>[2] No invented background.</li>
-								<li>[3] Three.js framed as focused lab work.</li>
-								<li>[4] Contact and code links available.</li>
+								<li>[3] CV + GitHub grounded.</li>
+								<li>[4] Streaming response path.</li>
 							</ul>
 							<div className="space-y-1 pt-2">
 								<p>-&gt; {profile.email}</p>
 								<p>-&gt; github.com/geo318</p>
-								<p>-&gt; linkedin.com/in/giorgi-lomidze-7569742bb</p>
+								<p>-&gt; linkedin.com/in/geo318</p>
 							</div>
 						</div>
 					</aside>
@@ -111,7 +223,13 @@ export function LiveChatSection() {
 								)}
 							>
 								<span className="size-2 rounded-full bg-current" />
-								{error ? "Setup Required" : busy ? "Streaming" : "Ready"}
+								{error
+									? "Setup Required"
+									: waitingForFirstToken
+										? "Thinking"
+										: status === "streaming"
+											? "Streaming"
+											: "Ready"}
 							</span>
 						</div>
 
@@ -119,6 +237,7 @@ export function LiveChatSection() {
 							{messages.map((message) => (
 								<ChatBubble key={message.id} message={message} />
 							))}
+							{waitingForFirstToken ? <ThinkingBubble /> : null}
 							{error ? (
 								<div className="border border-[#ff3b4f]/40 bg-[#ff3b4f]/8 p-3 font-mono text-xs leading-6 text-muted-foreground">
 									Check <span className="text-foreground">CHAT_API_KEY</span>{" "}
@@ -132,6 +251,7 @@ export function LiveChatSection() {
 									) : null}
 								</div>
 							) : null}
+							<div ref={messagesEndRef} />
 						</div>
 
 						<div className="border-t border-border/60 p-4">
@@ -152,17 +272,26 @@ export function LiveChatSection() {
 								<input
 									value={input}
 									onChange={(event) => setInput(event.target.value)}
-									placeholder="Ask about Giorgi's work..."
+									disabled={busy}
+									placeholder="Ask me about my CV..."
 									className="min-w-0 flex-1 border border-border bg-background/80 px-3 py-3 font-mono text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary"
 								/>
 								<button
 									type={busy ? "button" : "submit"}
-									onClick={busy ? stop : undefined}
-									className="inline-flex min-w-12 items-center justify-center border border-primary/55 bg-primary/10 px-4 text-primary transition hover:bg-primary/18"
-									aria-label={busy ? "Stop response" : "Send message"}
+									onClick={status === "streaming" ? stop : undefined}
+									disabled={waitingForFirstToken || (!busy && !canSubmit)}
+									className="inline-flex min-w-12 items-center justify-center border border-primary/55 bg-primary/10 px-4 text-primary transition hover:bg-primary/18 disabled:cursor-not-allowed disabled:opacity-45"
+									aria-label={
+										status === "streaming" ? "Stop response" : "Send message"
+									}
 								>
-									{busy ? (
+									{status === "streaming" ? (
 										<Square className="size-4" aria-hidden="true" />
+									) : waitingForFirstToken ? (
+										<LoaderCircle
+											className="size-4 animate-spin"
+											aria-hidden="true"
+										/>
 									) : (
 										<Send className="size-4" aria-hidden="true" />
 									)}
@@ -173,6 +302,22 @@ export function LiveChatSection() {
 				</div>
 			</div>
 		</SectionShell>
+	);
+}
+
+function ThinkingBubble() {
+	return (
+		<div className="flex justify-start">
+			<div className="max-w-[min(42rem,92%)] border border-primary/35 bg-card/70 px-4 py-3 text-sm leading-7 text-muted-foreground">
+				<div className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-primary">
+					Giorgi
+				</div>
+				<div className="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+					<LoaderCircle className="size-4 animate-spin text-secondary" />
+					Thinking
+				</div>
+			</div>
+		</div>
 	);
 }
 
@@ -194,7 +339,7 @@ function ChatBubble({ message }: { message: UIMessage }) {
 				)}
 			>
 				<div className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em]">
-					{mine ? "Visitor" : "Giorgi_AI"}
+					{mine ? "Visitor" : "Giorgi"}
 				</div>
 				<p className="whitespace-pre-wrap">{text}</p>
 			</div>

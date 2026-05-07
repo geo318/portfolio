@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Radar } from "lucide-react";
+import { MessageSquareText, Radar } from "lucide-react";
 import { CyberButton } from "@/components/ui/cyber-button";
 import { navLinks } from "@/content/portfolio";
 import { useScanMode } from "@/features/scan-mode/store";
@@ -9,7 +9,7 @@ export function SiteHeader() {
 	const { enabled, toggle } = useScanMode();
 
 	return (
-		<header className="sticky top-0 z-50 border-b border-border/60 bg-background/84 backdrop-blur-xl">
+		<header className="sticky top-0 z-50 border-b border-border/60 backdrop-blur-xl">
 			<div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
 				<a
 					href="#top"
@@ -21,7 +21,7 @@ export function SiteHeader() {
 					</span>
 					<span className="hidden font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:block">
 						<span className="block text-primary">Giorgi Lomidze</span>
-						<span>Frontend Systems Engineer</span>
+						<span>Full-stack Software Engineer</span>
 					</span>
 				</a>
 
@@ -49,9 +49,9 @@ export function SiteHeader() {
 						<span>{enabled ? "On" : "Off"}</span>
 					</button>
 					<CyberButton asChild className="min-h-9 min-w-32 px-3 text-[10px]">
-						<a href="#contact">
-							<Mail aria-hidden="true" />
-							Contact
+						<a href="#chat">
+							<MessageSquareText aria-hidden="true" />
+							Chat
 						</a>
 					</CyberButton>
 				</div>
