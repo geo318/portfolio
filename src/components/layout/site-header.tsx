@@ -51,7 +51,7 @@ export function SiteHeader() {
 					<CyberButton asChild className="min-h-9 min-w-32 px-3 text-[10px]">
 						<a href="#chat">
 							<MessageSquareText aria-hidden="true" />
-							Chat
+							Let&rsquo;s Chat
 						</a>
 					</CyberButton>
 				</div>

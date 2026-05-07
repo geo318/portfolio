@@ -31,7 +31,8 @@ export const profile = z
 		name: "Giorgi Lomidze",
 		role: "Full-stack Software Engineer",
 		location: "Tbilisi, Georgia",
-		headline: "Full-stack engineer building reliable product interfaces and integrations.",
+		headline:
+			"Full-stack engineer building reliable product interfaces and integrations.",
 		subcopy:
 			"6+ years with TypeScript, React, Next.js, Node.js, SQL, GraphQL, ConnectRPC, and API integrations.",
 		positioning:
@@ -44,10 +45,8 @@ export const profile = z
 	});
 
 export const navLinks: LinkItem[] = [
-	{ label: "Profile", href: "#fit" },
 	{ label: "Stack", href: "#stack" },
 	{ label: "Workstation", href: "#three-lab" },
-	{ label: "Architecture", href: "#architecture" },
 	{ label: "Projects", href: "#work" },
 	{ label: "Experience", href: "#experience" },
 	{ label: "Chat", href: "#chat" },
@@ -238,7 +237,14 @@ export const projects = z
 			title: "Marketplace for Mobile Proxies",
 			company: "Proxied",
 			role: "Lead Full-stack Developer",
-			tags: ["Next.js", "GraphQL", "Tailwind CSS", "Zod", "shadcn/ui", "Docker"],
+			tags: [
+				"Next.js",
+				"GraphQL",
+				"Tailwind CSS",
+				"Zod",
+				"shadcn/ui",
+				"Docker",
+			],
 			copy: "Led three developers and shipped buyer, hoster, and staff dashboards for a mobile proxy marketplace: onboarding, payouts, ticket triage, SEO, and backend tools.",
 			github: "https://proxied.com",
 		},
@@ -246,7 +252,15 @@ export const projects = z
 			title: "Connect",
 			company: "DHC",
 			role: "Full-stack Developer",
-			tags: ["Next.js", "RSC", "TRPC", "React Query", "Drizzle", "Matrix.js", "Zod"],
+			tags: [
+				"Next.js",
+				"RSC",
+				"TRPC",
+				"React Query",
+				"Drizzle",
+				"Matrix.js",
+				"Zod",
+			],
 			copy: "Platform for doctors supporting people with disabilities. Integrated Matrix.js communication/file sharing, built TRPC endpoints, and created responsive chat UI.",
 		},
 		{
@@ -267,7 +281,14 @@ export const projects = z
 			title: "iMall - Multi-tenant Marketplace",
 			company: "Personal Project",
 			role: "Full-stack Engineer",
-			tags: ["Next.js", "TypeScript", "Tailwind CSS", "SQL", "Auth", "Multi-tenant"],
+			tags: [
+				"Next.js",
+				"TypeScript",
+				"Tailwind CSS",
+				"SQL",
+				"Auth",
+				"Multi-tenant",
+			],
 			copy: "Marketplace focused on tenant-aware routing, catalog/listing flows, filters, vendor/admin surfaces, SEO pages, and modular architecture.",
 			github: "https://imall.ge",
 		},
