@@ -1,9 +1,10 @@
 "use client";
 
-import { Center, OrbitControls, useGLTF } from "@react-three/drei";
+import { Center, Html, OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { SuitLoader } from "@/features/hero-suit/components/suit-loader";
 import { useReducedMotionPreference } from "@/hooks/use-reduced-motion-preference";
 
 const SUIT_MODEL_URL = "/models/rust_space_suit.glb";
@@ -53,7 +54,7 @@ export function HeroSuitScene() {
 				<directionalLight color="#ffffff" intensity={2.8} position={[2, 1.5, 3]} />
 				<pointLight color="#39d7ff" intensity={24} position={[-3, -0.8, 3]} />
 				<pointLight color="#9eff4f" intensity={12} position={[2.8, 1.8, 2.4]} />
-				<Suspense fallback={null}>
+				<Suspense fallback={<SuitCanvasLoader />}>
 					<SuitRig compact={compact} reducedMotion={reducedMotion} />
 				</Suspense>
 				<OrbitControls
@@ -66,6 +67,14 @@ export function HeroSuitScene() {
 				/>
 			</Canvas>
 		</div>
+	);
+}
+
+function SuitCanvasLoader() {
+	return (
+		<Html center>
+			<SuitLoader label="GLB sync" className="scale-90" />
+		</Html>
 	);
 }
 
@@ -129,9 +138,7 @@ function useCompactViewport() {
 function SuitFallback({ label }: { label: string }) {
 	return (
 		<div className="grid h-[430px] place-items-center sm:h-[540px] lg:h-[640px]">
-			<div className="border border-primary/40 bg-background/70 px-4 py-3 font-mono text-xs uppercase tracking-[0.18em] text-primary backdrop-blur-sm">
-				{label}
-			</div>
+			<SuitLoader label={label} />
 		</div>
 	);
 }

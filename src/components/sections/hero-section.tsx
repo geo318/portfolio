@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Code2, Mail, MapPin, MoveUpRight } from "lucide-react";
+import { Code2, Download, Mail, MapPin, MoveUpRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import { ScanLabel } from "@/components/layout/scan-label";
 import { CyberButton } from "@/components/ui/cyber-button";
 import { profile } from "@/content/portfolio";
+import { SuitLoader } from "@/features/hero-suit/components/suit-loader";
 
 const HeroSuitScene = dynamic(
 	() =>
@@ -26,9 +27,9 @@ export function HeroSection() {
 					initial={{ opacity: 0, y: 18 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.55, ease: "easeOut" }}
-					className="scan-target relative w-full min-w-0 justify-self-stretch"
+					className="hero-copy-base scan-target relative w-full min-w-0 justify-self-stretch"
 				>
-					<ScanLabel>Server Component</ScanLabel>
+					<ScanLabel>CV Copy Source</ScanLabel>
 					<div className="mb-5 flex flex-wrap items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
 						<span className="text-primary">{profile.name}</span>
 						<span>/</span>
@@ -41,9 +42,9 @@ export function HeroSection() {
 					</div>
 
 					<h1 className="max-w-3xl text-5xl font-semibold leading-[0.96] tracking-tight sm:text-6xl lg:text-7xl">
-						Building reliable frontend systems for{" "}
+						Full-stack engineer building{" "}
 						<span className="text-primary text-glow">
-							interactive products.
+							reliable product interfaces and integrations.
 						</span>
 					</h1>
 
@@ -57,12 +58,18 @@ export function HeroSection() {
 
 					<div className="mt-8 flex flex-wrap gap-3">
 						<CyberButton asChild>
-							<a href="#three-lab">
-								Open OS Lab
+							<a href="#work">
+								View work
 								<MoveUpRight aria-hidden="true" />
 							</a>
 						</CyberButton>
 						<CyberButton asChild variant="secondary">
+							<a href={profile.cvHref} download>
+								<Download aria-hidden="true" />
+								Download CV
+							</a>
+						</CyberButton>
+						<CyberButton asChild variant="ghost">
 							<a href={profile.github} target="_blank" rel="noreferrer">
 								<Code2 aria-hidden="true" />
 								Open GitHub
@@ -83,9 +90,9 @@ export function HeroSection() {
 					transition={{ duration: 0.7, ease: "easeOut", delay: 0.08 }}
 					className="scan-target relative w-full min-w-0 justify-self-stretch lg:translate-x-6 xl:translate-x-10"
 				>
-					<ScanLabel>Client Boundary</ScanLabel>
+					<ScanLabel>Lazy WebGL Boundary</ScanLabel>
 					<div className="pointer-events-none absolute left-4 top-6 z-10 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-						Rust space suit / WebGL
+						Visual shell / WebGL
 					</div>
 					<HeroSuitScene />
 				</motion.div>
@@ -97,9 +104,7 @@ export function HeroSection() {
 function HeroSuitFallback() {
 	return (
 		<div className="grid h-[430px] place-items-center sm:h-[540px] lg:h-[640px]">
-			<div className="border border-primary/40 bg-background/70 px-4 py-3 font-mono text-xs uppercase tracking-[0.18em] text-primary backdrop-blur-sm">
-				Loading space suit
-			</div>
+			<SuitLoader label="Loading suit" />
 		</div>
 	);
 }

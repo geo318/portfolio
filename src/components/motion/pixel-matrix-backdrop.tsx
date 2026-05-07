@@ -19,7 +19,7 @@ type CursorState = {
 type Star = {
 	alpha: number;
 	size: number;
-	tint: "cyan" | "green" | "white" | "violet";
+	tint: "cyan" | "green" | "white";
 	twinkle: number;
 	x: number;
 	y: number;
@@ -109,12 +109,10 @@ export function PixelMatrixBackdrop() {
 					alpha: 0.34 + random() * 0.66,
 					size: 0.42 + random() * 1.8,
 					tint:
-						tintRoll > 0.88
-							? "violet"
-							: tintRoll > 0.66
-								? "cyan"
-								: tintRoll > 0.48
-									? "green"
+						tintRoll > 0.66
+							? "cyan"
+							: tintRoll > 0.48
+								? "green"
 									: "white",
 					twinkle: random() * Math.PI * 2,
 					x: random() * 2.35 - 1.18,
@@ -153,8 +151,8 @@ export function PixelMatrixBackdrop() {
 					speed: 0.026,
 				},
 				{
-					color: "rgba(139,92,246,0.9)",
-					glow: "rgba(139,92,246,0.46)",
+					color: "rgba(57,215,255,0.88)",
+					glow: "rgba(57,215,255,0.32)",
 					orbitX: 660 * scale,
 					orbitY: 194 * scale,
 					phase: 2.62,
@@ -205,7 +203,7 @@ export function PixelMatrixBackdrop() {
 			);
 			sunWash.addColorStop(0, "rgba(248,255,190,0.24)");
 			sunWash.addColorStop(0.08, "rgba(57,215,255,0.17)");
-			sunWash.addColorStop(0.24, "rgba(139,92,246,0.1)");
+			sunWash.addColorStop(0.24, "rgba(158,255,79,0.06)");
 			sunWash.addColorStop(0.58, "rgba(8,12,28,0.2)");
 			sunWash.addColorStop(1, "rgba(0,0,0,0)");
 			ctx.fillStyle = sunWash;
@@ -237,9 +235,7 @@ export function PixelMatrixBackdrop() {
 						? `rgba(57,215,255,${alpha})`
 						: star.tint === "green"
 							? `rgba(158,255,79,${alpha})`
-							: star.tint === "violet"
-								? `rgba(139,92,246,${alpha})`
-								: `rgba(248,250,252,${alpha})`;
+							: `rgba(248,250,252,${alpha})`;
 
 				const size = star.size * depth;
 				ctx.fillStyle = color;
@@ -279,7 +275,7 @@ export function PixelMatrixBackdrop() {
 			corona.addColorStop(0, "rgba(255,250,206,0.98)");
 			corona.addColorStop(0.035, "rgba(248,255,79,0.56)");
 			corona.addColorStop(0.12, "rgba(57,215,255,0.24)");
-			corona.addColorStop(0.34, "rgba(139,92,246,0.1)");
+			corona.addColorStop(0.34, "rgba(158,255,79,0.055)");
 			corona.addColorStop(0.7, "rgba(10,16,32,0.04)");
 			corona.addColorStop(1, "rgba(0,0,0,0)");
 			ctx.fillStyle = corona;
@@ -552,14 +548,11 @@ export function PixelMatrixBackdrop() {
 			cursor.lastActiveAt = performance.now();
 			cursor.targetX = event.clientX;
 			cursor.targetY = event.clientY;
-			cursor.x = event.clientX;
-			cursor.y = event.clientY;
 			pushTrailPoint(event.clientX, event.clientY, 1);
 			if (reducedMotion) render();
 		};
 
 		const onPointerUp = () => {
-			cursor.active = false;
 			cursor.pressed = false;
 			cursor.lastActiveAt = performance.now();
 			if (reducedMotion) render();

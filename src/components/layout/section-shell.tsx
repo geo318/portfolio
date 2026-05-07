@@ -12,7 +12,7 @@ export function SectionShell({
 	code,
 	title,
 	subtitle,
-	scanLabel = "Server Component",
+	scanLabel = "Typed Content",
 	children,
 	className,
 }: {
