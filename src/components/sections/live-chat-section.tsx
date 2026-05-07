@@ -59,7 +59,7 @@ export function LiveChatSection() {
 					<span className="text-primary text-glow">Answers like me</span>.
 				</>
 			}
-			subtitle="Prepared for OpenAI-backed live chat through Vercel AI SDK. The prompt is grounded in portfolio content and tuned to answer in my voice without overstating experience."
+			subtitle="Prepared for provider-backed live chat through a server route. The prompt is grounded in portfolio content and tuned to answer in my voice without overstating experience."
 			scanLabel="AI Boundary"
 		>
 			<div className="corner-brackets scan-target relative overflow-hidden border border-primary/25 bg-background/80 shadow-[0_24px_100px_rgb(0_0_0/0.32)] backdrop-blur">
@@ -72,7 +72,7 @@ export function LiveChatSection() {
 					<span className="hidden text-secondary sm:inline">
 						~/giorgi/live-profile-chat.ts
 					</span>
-					<span>UTF-8 / AI SDK</span>
+					<span>UTF-8 / CHAT API</span>
 				</div>
 
 				<div className="grid gap-0 lg:grid-cols-[0.82fr_1.18fr]">
@@ -82,7 +82,7 @@ export function LiveChatSection() {
 							<div>
 								<p className="text-foreground"># Live profile terminal</p>
 								<p className="mt-3">
-									This is ready for an OpenAI route. It answers from a
+									This is ready for a server-side chat route. It answers from a
 									server-side prompt built around my portfolio content, contact
 									links, code sample, and honesty boundaries.
 								</p>
@@ -103,7 +103,7 @@ export function LiveChatSection() {
 
 					<div className="flex min-h-[34rem] flex-col">
 						<div className="flex items-center justify-between border-b border-border/60 px-5 py-3 font-mono text-[10px] uppercase tracking-[0.18em]">
-							<span className="text-primary">OpenAI Live Chat</span>
+							<span className="text-primary">Live Profile Chat</span>
 							<span
 								className={cn(
 									"inline-flex items-center gap-2",
@@ -121,11 +121,10 @@ export function LiveChatSection() {
 							))}
 							{error ? (
 								<div className="border border-[#ff3b4f]/40 bg-[#ff3b4f]/8 p-3 font-mono text-xs leading-6 text-muted-foreground">
-									Check <span className="text-foreground">OPENAI_API_KEY</span>{" "}
+									Check <span className="text-foreground">CHAT_API_KEY</span>{" "}
 									and{" "}
-									<span className="text-foreground">OPENAI_CHAT_MODEL</span>.
-									The route falls back to gpt-4.1-mini for legacy model IDs.
-									If those are correct, check OpenAI project billing/quota.
+									<span className="text-foreground">CHAT_MODEL</span>. If those
+									are correct, check provider quota or rate limits.
 									{error.message ? (
 										<span className="mt-2 block text-[#ffb4c4]">
 											{error.message.slice(0, 180)}

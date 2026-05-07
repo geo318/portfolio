@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import {
 	convertToModelMessages,
 	streamText,
@@ -8,33 +8,27 @@ import { giorgiChatSystemPrompt } from "@/content/chat-profile";
 
 export const maxDuration = 30;
 
-const DEFAULT_OPENAI_CHAT_MODEL = "gpt-4.1-mini";
-const legacyModelIds = new Set([
-	"gpt-4",
-	"gpt-4-0314",
-	"gpt-4-0613",
-	"gpt-4-32k",
-	"gpt-4-32k-0314",
-	"gpt-4-32k-0613",
-	"gpt-3.5-turbo-0301",
-	"gpt-3.5-turbo-0613",
-]);
+const DEFAULT_CHAT_MODEL = "gemini-2.5-flash-lite";
 
 function getChatModel() {
-	const configured = process.env.OPENAI_CHAT_MODEL?.trim();
-	if (!configured || legacyModelIds.has(configured)) {
-		return DEFAULT_OPENAI_CHAT_MODEL;
-	}
+	return process.env.CHAT_MODEL?.trim() || DEFAULT_CHAT_MODEL;
+}
 
-	return configured;
+function getChatApiKey() {
+	return (
+		process.env.CHAT_API_KEY?.trim() ||
+		process.env.GOOGLE_GENERATIVE_AI_API_KEY?.trim()
+	);
 }
 
 export async function POST(request: Request) {
-	if (!process.env.OPENAI_API_KEY) {
+	const apiKey = getChatApiKey();
+
+	if (!apiKey) {
 		return Response.json(
 			{
 				error:
-					"OPENAI_API_KEY is not configured. Add it on the server to enable live chat.",
+					"CHAT_API_KEY is not configured. Add a server-side provider key to enable live chat.",
 			},
 			{ status: 503 },
 		);
@@ -46,8 +40,10 @@ export async function POST(request: Request) {
 		return Response.json({ error: "Missing messages array." }, { status: 400 });
 	}
 
+	const provider = createGoogleGenerativeAI({ apiKey });
+
 	const result = streamText({
-		model: openai(getChatModel()),
+		model: provider(getChatModel()),
 		system: giorgiChatSystemPrompt,
 		messages: await convertToModelMessages(messages.slice(-10)),
 		temperature: 0.35,
