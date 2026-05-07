@@ -1,17 +1,87 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import {
+	absoluteUrl,
+	getSiteUrl,
+	siteDescription,
+	siteKeywords,
+	siteTitle,
+	websiteJsonLd,
+} from "@/lib/site-metadata";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Giorgi Lomidze | Full-stack Software Engineer",
-	description:
-		"CV-backed portfolio for Giorgi Lomidze: full-stack software engineer with 6+ years of React, Next.js, TypeScript, Node.js, SQL, API integration, and product delivery experience.",
-	authors: [{ name: "Giorgi Lomidze" }],
-	openGraph: {
-		title: "Giorgi Lomidze | Full-stack Software Engineer",
-		description:
-			"Full-stack product engineering portfolio covering React, Next.js, TypeScript, Node.js, SQL, GraphQL, ConnectRPC, dashboards, marketplaces, and integrations.",
-		type: "website",
+	metadataBase: new URL(getSiteUrl()),
+	title: {
+		default: siteTitle,
+		template: "%s | Giorgi Lomidze",
 	},
+	description: siteDescription,
+	applicationName: "Giorgi Lomidze Portfolio",
+	keywords: siteKeywords,
+	authors: [{ name: "Giorgi Lomidze" }],
+	creator: "Giorgi Lomidze",
+	publisher: "Giorgi Lomidze",
+	category: "portfolio",
+	alternates: {
+		canonical: "/",
+	},
+	robots: {
+		index: true,
+		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+			"max-image-preview": "large",
+			"max-snippet": -1,
+			"max-video-preview": -1,
+		},
+	},
+	openGraph: {
+		title: siteTitle,
+		description: siteDescription,
+		url: "/",
+		siteName: "Giorgi Lomidze Portfolio",
+		locale: "en_US",
+		type: "website",
+		images: [
+			{
+				url: "/opengraph-image",
+				width: 1200,
+				height: 630,
+				alt: "Giorgi Lomidze full-stack software engineer portfolio",
+			},
+		],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: siteTitle,
+		description: siteDescription,
+		images: ["/opengraph-image"],
+	},
+	icons: {
+		icon: "/icon.svg",
+		shortcut: "/icon.svg",
+		apple: "/icon.svg",
+	},
+	manifest: "/manifest.webmanifest",
+	verification: {
+		other: {
+			"portfolio-owner": "Giorgi Lomidze",
+		},
+	},
+	formatDetection: {
+		email: false,
+		address: false,
+		telephone: false,
+	},
+};
+
+export const viewport: Viewport = {
+	width: "device-width",
+	initialScale: 1,
+	viewportFit: "cover",
+	colorScheme: "dark",
+	themeColor: "#070a0f",
 };
 
 export default function RootLayout({
@@ -21,7 +91,20 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" className="h-full antialiased">
-			<body className="min-h-full">{children}</body>
+			<body className="min-h-full">
+				<script
+					type="application/ld+json"
+					suppressHydrationWarning
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify({
+							...websiteJsonLd,
+							url: getSiteUrl(),
+							image: absoluteUrl("/opengraph-image"),
+						}),
+					}}
+				/>
+				{children}
+			</body>
 		</html>
 	);
 }

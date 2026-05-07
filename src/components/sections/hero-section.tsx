@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Code2, Download, Mail, MapPin, MoveUpRight } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import { ScanLabel } from "@/components/layout/scan-label";
 import { CyberButton } from "@/components/ui/cyber-button";
 import { profile } from "@/content/portfolio";
@@ -29,7 +30,9 @@ export function HeroSection() {
 					transition={{ duration: 0.55, ease: "easeOut" }}
 					className="hero-copy-base scan-target relative w-full min-w-0 justify-self-stretch"
 				>
-					<ScanLabel>CV Copy Source</ScanLabel>
+					<ScanLabel detail="Client hero wrapper; copy comes from typed CV-backed profile config.">
+						Hero Copy
+					</ScanLabel>
 					<div className="mb-5 flex flex-wrap items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
 						<span className="text-primary">{profile.name}</span>
 						<span>/</span>
@@ -88,17 +91,45 @@ export function HeroSection() {
 					initial={{ opacity: 0, scale: 0.98 }}
 					animate={{ opacity: 1, scale: 1 }}
 					transition={{ duration: 0.7, ease: "easeOut", delay: 0.08 }}
-					className="scan-target relative w-full min-w-0 justify-self-stretch lg:translate-x-6 xl:translate-x-10"
+					className="scan-target relative hidden w-full min-w-0 justify-self-stretch lg:block lg:translate-x-6 xl:translate-x-10"
 				>
-					<ScanLabel>Lazy WebGL Boundary</ScanLabel>
+					<ScanLabel detail="Next dynamic import; R3F canvas and GLB model render only on client.">
+						Lazy WebGL
+					</ScanLabel>
 					<div className="pointer-events-none absolute left-4 top-6 z-10 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
 						Visual shell / WebGL
 					</div>
-					<HeroSuitScene />
+					<DeferredHeroSuitScene />
 				</motion.div>
 			</div>
 		</section>
 	);
+}
+
+function DeferredHeroSuitScene() {
+	const [ready, setReady] = useState(false);
+
+	useEffect(() => {
+		const idleWindow = window as Window & {
+			requestIdleCallback?: (
+				callback: IdleRequestCallback,
+				options?: IdleRequestOptions,
+			) => number;
+			cancelIdleCallback?: (handle: number) => void;
+		};
+
+		if (idleWindow.requestIdleCallback && idleWindow.cancelIdleCallback) {
+			const idleId = idleWindow.requestIdleCallback(() => setReady(true), {
+				timeout: 900,
+			});
+			return () => idleWindow.cancelIdleCallback?.(idleId);
+		}
+
+		const timeoutId = globalThis.setTimeout(() => setReady(true), 450);
+		return () => globalThis.clearTimeout(timeoutId);
+	}, []);
+
+	return ready ? <HeroSuitScene /> : <HeroSuitFallback />;
 }
 
 function HeroSuitFallback() {

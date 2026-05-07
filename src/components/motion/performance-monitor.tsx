@@ -11,15 +11,19 @@ type RuntimeStat = {
 };
 
 export function PerformanceMonitor() {
-	const stats = useRuntimePerformance();
+	const enabled = useMonitorEnabled();
+	const stats = useRuntimePerformance(enabled);
 
 	return (
-		<div className="fixed right-3 bottom-5 z-50 hidden w-60 border border-primary/20 bg-[#061018]/45 p-3 opacity-50 shadow-[0_16px_60px_rgb(0_0_0/0.2)] backdrop-blur-md transition-opacity duration-200 hover:opacity-95 md:block">
+		<div
+			className="fixed right-3 bottom-5 z-50 hidden w-60 border border-primary/20 bg-[#061018]/45 p-3 opacity-50 shadow-[0_16px_60px_rgb(0_0_0/0.2)] backdrop-blur-md transition-opacity duration-200 hover:opacity-95 md:block"
+			aria-hidden="true"
+		>
 			<div className="mb-3 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.2em]">
 				<span className="text-muted-foreground">Perf Monitor</span>
 				<span className="flex items-center gap-1.5 text-primary">
 					<span className="size-1.5 rounded-full bg-primary shadow-[0_0_12px_rgb(158_255_79/0.7)]" />
-					Live
+					{enabled ? "Live" : "Idle"}
 				</span>
 			</div>
 			<div className="grid gap-2.5">
@@ -29,6 +33,29 @@ export function PerformanceMonitor() {
 			</div>
 		</div>
 	);
+}
+
+function useMonitorEnabled() {
+	const [enabled, setEnabled] = useState(false);
+
+	useEffect(() => {
+		const query = window.matchMedia("(min-width: 768px)");
+
+		const sync = () => {
+			setEnabled(query.matches && document.visibilityState === "visible");
+		};
+
+		sync();
+		query.addEventListener("change", sync);
+		document.addEventListener("visibilitychange", sync);
+
+		return () => {
+			query.removeEventListener("change", sync);
+			document.removeEventListener("visibilitychange", sync);
+		};
+	}, []);
+
+	return enabled;
 }
 
 function PerformanceStat({ label, value, max, ratio, tone }: RuntimeStat) {
@@ -56,7 +83,7 @@ function PerformanceStat({ label, value, max, ratio, tone }: RuntimeStat) {
 	);
 }
 
-function useRuntimePerformance() {
+function useRuntimePerformance(enabled: boolean) {
 	const [sample, setSample] = useState({
 		fps: 60,
 		frameTime: 16.7,
@@ -67,6 +94,8 @@ function useRuntimePerformance() {
 	});
 
 	useEffect(() => {
+		if (!enabled) return;
+
 		let frame = 0;
 		let last = performance.now();
 		let lastCommit = last;
@@ -114,7 +143,7 @@ function useRuntimePerformance() {
 
 		raf = requestAnimationFrame(tick);
 		return () => cancelAnimationFrame(raf);
-	}, []);
+	}, [enabled]);
 
 	const heapMax = Math.max(256, sample.heapLimitMb || 1024);
 
