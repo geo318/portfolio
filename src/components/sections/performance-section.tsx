@@ -11,12 +11,11 @@ export function PerformanceSection() {
 			code="PROFILING_BOARD"
 			title={
 				<>
-					Predictable state first.{" "}
-					<span className="text-secondary cyan-glow">Less wasted work</span>{" "}
-					second.
+					Quality habits that show up{" "}
+					<span className="text-secondary cyan-glow">in delivery</span>.
 				</>
 			}
-			subtitle="My default approach is to first make state predictable, then reduce unnecessary work."
+			subtitle="Recurring delivery habits: typed boundaries, refactoring, SEO, deployment, API tests, and maintainability."
 			scanLabel="Performance Guard"
 		>
 			<div className="panel corner-brackets scan-target relative overflow-hidden p-5">

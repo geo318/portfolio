@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Giorgi Lomidze | Frontend Systems Engineer",
+	title: "Giorgi Lomidze | Full-stack Software Engineer",
 	description:
-		"3D-focused portfolio for Giorgi Lomidze: React, Next.js, TypeScript, real-time UI, DDD architecture, and a focused Three.js/WebGL showcase.",
+		"CV-backed portfolio for Giorgi Lomidze: full-stack software engineer with 6+ years of React, Next.js, TypeScript, Node.js, SQL, API integration, and product delivery experience.",
 	authors: [{ name: "Giorgi Lomidze" }],
 	openGraph: {
-		title: "Giorgi Lomidze | Frontend Systems Engineer",
+		title: "Giorgi Lomidze | Full-stack Software Engineer",
 		description:
-			"Production frontend experience with a focused Three.js/WebGL technical showcase.",
+			"Full-stack product engineering portfolio covering React, Next.js, TypeScript, Node.js, SQL, GraphQL, ConnectRPC, dashboards, marketplaces, and integrations.",
 		type: "website",
 	},
 };

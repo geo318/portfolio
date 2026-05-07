@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, Code2, Mail } from "lucide-react";
+import { BriefcaseBusiness, Code2, Download, Mail, Phone } from "lucide-react";
 import { SectionShell } from "@/components/layout/section-shell";
 import { CyberButton } from "@/components/ui/cyber-button";
 import { profile } from "@/content/portfolio";
@@ -11,11 +11,11 @@ export function ContactSection() {
 			code="HANDSHAKE"
 			title={
 				<>
-					Let&apos;s talk{" "}
-					<span className="text-primary text-glow">frontend systems</span>.
+					Contact and{" "}
+					<span className="text-primary text-glow">full CV</span>.
 				</>
 			}
-			subtitle="Open to discussing 3D, graphics-heavy frontend work, real-time UI, and maintainable product architecture."
+			subtitle="The CV has the full timeline. Best fit: frontend-heavy full-stack product work with React, Next.js, TypeScript, integrations, and maintainable delivery."
 			scanLabel="Client Boundary"
 		>
 			<div className="panel corner-brackets scan-target relative p-5">
@@ -38,8 +38,17 @@ export function ContactSection() {
 							LinkedIn
 						</a>
 					</CyberButton>
-					<CyberButton disabled variant="ghost">
-						Download CV unavailable
+					<CyberButton asChild variant="secondary">
+						<a href={profile.cvHref} download>
+							<Download aria-hidden="true" />
+							Download CV
+						</a>
+					</CyberButton>
+					<CyberButton asChild variant="ghost">
+						<a href={`tel:${profile.phone.replaceAll(" ", "")}`}>
+							<Phone aria-hidden="true" />
+							Call
+						</a>
 					</CyberButton>
 				</div>
 			</div>

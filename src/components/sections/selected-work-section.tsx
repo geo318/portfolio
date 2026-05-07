@@ -13,10 +13,11 @@ export function SelectedWorkSection() {
 			code="CASE_STUDIES"
 			title={
 				<>
-					Production-flavored{" "}
-					<span className="text-primary text-glow">frontend work</span>.
+					Selected projects from{" "}
+					<span className="text-primary text-glow">the CV</span>.
 				</>
 			}
+			subtitle="Advisor platforms, marketplaces, communication tooling, financial integrations, ERP work, and a personal multi-tenant marketplace."
 			scanLabel="Cached Content"
 		>
 			<div className="grid gap-4 md:grid-cols-2">
@@ -42,6 +43,15 @@ export function SelectedWorkSection() {
 									</a>
 								) : null}
 							</div>
+							{project.company || project.role ? (
+								<div className="mb-4 flex flex-wrap gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+									{project.company ? (
+										<span className="text-primary">{project.company}</span>
+									) : null}
+									{project.company && project.role ? <span>/</span> : null}
+									{project.role ? <span>{project.role}</span> : null}
+								</div>
+							) : null}
 							<p className="text-sm leading-7 text-muted-foreground">
 								{project.copy}
 							</p>

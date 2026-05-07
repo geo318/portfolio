@@ -8,14 +8,15 @@ export function FitSection() {
 	return (
 		<SectionShell
 			id="fit"
-			eyebrow="// Sector 01 // 3D Fit"
-			code="MISSION_BRIEF"
+			eyebrow="// Sector 01 // Profile"
+			code="ENGINEERING_BRIEF"
 			title={
 				<>
-					Why this maps to <span className="text-primary text-glow">3D</span>.
+					What I actually{" "}
+					<span className="text-primary text-glow">bring to a team</span>.
 				</>
 			}
-			subtitle="Frontend work for a home-design product needs reliable state, maintainable TypeScript, spatial product thinking, and honest graphics readiness."
+			subtitle="Frontend-heavy full-stack delivery, clean integrations, product ownership, refactoring discipline, and enough backend/platform range to move fast."
 			scanLabel="Cached Content"
 		>
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -26,7 +27,7 @@ export function FitSection() {
 							intensity={8}
 						>
 							<div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-								Fit Card
+								Profile Signal
 							</div>
 							<h3 className="text-xl font-semibold">{item.title}</h3>
 							<p className="mt-3 min-h-28 text-sm leading-7 text-muted-foreground">

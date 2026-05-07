@@ -11,8 +11,8 @@ export function ApplicationNotes() {
 			code="ANSWERS"
 			title={
 				<>
-					Direct answers.{" "}
-					<span className="text-primary text-glow">No inflated claims</span>.
+					Positioning notes.{" "}
+					<span className="text-primary text-glow">Plain and useful</span>.
 				</>
 			}
 			scanLabel="Cached Content"
@@ -25,7 +25,7 @@ export function ApplicationNotes() {
 							intensity={6}
 						>
 							<div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-secondary">
-								Application Note
+								Portfolio Note
 							</div>
 							<h3 className="text-xl font-semibold">{note.title}</h3>
 							<p className="mt-4 text-sm leading-7 text-muted-foreground">

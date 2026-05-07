@@ -10,11 +10,11 @@ export function ArchitectureSection() {
 			code="BOUNDARY_MAP"
 			title={
 				<>
-					How I structure{" "}
-					<span className="text-primary text-glow">product code</span>.
+					How I keep product code{" "}
+					<span className="text-primary text-glow">changeable</span>.
 				</>
 			}
-			subtitle="Business rules stay testable and transport-independent."
+			subtitle="A practical map of typed UI, service integration, DTO mapping, validation, and platform constraints."
 			scanLabel="Domain Service"
 		>
 			<div className="panel corner-brackets scan-target relative overflow-hidden p-4 md:p-6">

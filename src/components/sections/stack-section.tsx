@@ -11,10 +11,11 @@ export function StackSection() {
 			code="PARTS_MATRIX"
 			title={
 				<>
-					Compact{" "}
-					<span className="text-secondary cyan-glow">systems matrix</span>.
+					Technology I have used in{" "}
+					<span className="text-secondary cyan-glow">real product work</span>.
 				</>
 			}
+			subtitle="Grouped from the CV: frontend, backend/API, database/ORM, and platform tooling."
 			scanLabel="Tested Utility"
 		>
 			<div className="grid gap-4 lg:grid-cols-4">

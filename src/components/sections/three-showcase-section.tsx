@@ -18,7 +18,7 @@ type OsApp = {
 	description: string;
 	bullets: string[];
 	icon: string;
-	accent: "primary" | "secondary" | "magenta";
+	accent: "primary" | "secondary";
 };
 
 type WindowState = {
@@ -34,96 +34,96 @@ type WindowState = {
 const osApps: OsApp[] = [
 	{
 		id: "runtime",
-		name: "frontend_runtime.app",
-		process: "React / Next.js",
-		role: "Production UI shell",
-		stack: ["Next.js 16", "React 19", "TypeScript", "App Router"],
+		name: "advisor_desktop.app",
+		process: "Alpheya",
+		role: "Advisor-facing platform",
+		stack: ["Next.js", "React", "TypeScript", "Turborepo"],
 		description:
-			"Reliable frontend work: typed components, route boundaries, server/client split, and UI that survives product change.",
+			"Financial platform work in a large monorepo: client, account, transfer, and reference-data flows with strict integration and maintainability requirements.",
 		bullets: [
-			"Builds around behavior and contracts first.",
-			"Keeps reusable UI small enough to reason about.",
-			"Uses server/client boundaries intentionally instead of by habit.",
+			"Migrated flows from GraphQL patterns to ConnectRPC services.",
+			"Handled SSR/RSC constraints and production-grade data flow.",
+			"Improved maintainability through stronger typing and shared patterns.",
 		],
 		icon: "▣",
 		accent: "primary",
 	},
 	{
 		id: "realtime",
-		name: "realtime_bus.app",
-		process: "WebSocket state",
-		role: "Live product flows",
-		stack: ["WebSockets", "React Query", "Timers", "Optimistic UI"],
+		name: "proxied_platform.app",
+		process: "Proxied",
+		role: "Lead full-stack work",
+		stack: ["Next.js", "TypeScript", "Express", "Docker"],
 		description:
-			"Live interfaces need calm state handling: connection status, event ordering, cache updates, timers, and user-facing feedback.",
+			"Mobile proxy marketplace work across websites, dashboards, internal tools, backend APIs, SEO, and deployment workflows.",
 		bullets: [
-			"Prefers event-driven updates over wasteful polling.",
-			"Separates transport events from UI projection.",
-			"Treats latency and stale state as product problems.",
+			"Led buyer, hoster, and staff-facing platform features.",
+			"Reviewed code and helped define engineering standards.",
+			"Set up development and staging environments with CI/CD.",
 		],
 		icon: "◉",
 		accent: "secondary",
 	},
 	{
 		id: "domain",
-		name: "domain_boundaries.sys",
-		process: "DDD / SOLID",
-		role: "Application architecture",
-		stack: ["Use cases", "Services", "Adapters", "Zod contracts"],
+		name: "integration_layer.sys",
+		process: "Service boundaries",
+		role: "API and DTO mapping",
+		stack: ["GraphQL", "ConnectRPC", "Buf", "Zod"],
 		description:
-			"Business rules stay testable when UI, transport, persistence, and domain behavior are not collapsed into one layer.",
+			"Integration work is where small mistakes become expensive. I keep service clients, mapping, validation, and UI state separated enough to debug and change.",
 		bullets: [
-			"Extracts domain services where rules repeat or matter.",
-			"Keeps adapters replaceable around external systems.",
-			"Makes risky refactors incremental instead of theatrical.",
+			"Builds typed integration layers around generated clients.",
+			"Uses shared schemas and explicit DTO mappers.",
+			"Keeps transport details out of reusable UI components.",
 		],
 		icon: "◈",
 		accent: "primary",
 	},
 	{
 		id: "webgl",
-		name: "webgl_lab.exe",
-		process: "Focused 3D readiness",
-		role: "Graphics-heavy UI boundary",
-		stack: ["Three.js", "R3F", "Drei", "Lazy loading"],
+		name: "product_ui.exe",
+		process: "Complex interfaces",
+		role: "Forms, dashboards, flows",
+		stack: ["React Hook Form", "React Query", "Tailwind", "Storybook"],
 		description:
-			"A focused lab, not a claim of years as a production graphics engineer. It shows how heavy rendering code is isolated and guarded.",
+			"Most of my value is in product surfaces that combine forms, tables, permissions, service state, loading paths, validation, and edge cases.",
 		bullets: [
-			"Loads heavy WebGL code behind explicit boundaries.",
-			"Supports fallback and reduced-motion behavior.",
-			"Keeps GPU cleanup and performance constraints visible.",
+			"Builds UI around behavior and contracts first.",
+			"Keeps reusable pieces small enough to reason about.",
+			"Treats empty, loading, error, and stale states as core UX.",
 		],
 		icon: "◇",
-		accent: "magenta",
+		accent: "secondary",
 	},
 	{
 		id: "performance",
-		name: "performance_guard.bin",
-		process: "Frontend reliability",
-		role: "Measured optimization",
-		stack: ["Profiling", "Memoization", "Code split", "A11y"],
+		name: "delivery_guard.bin",
+		process: "Refactor and quality",
+		role: "Maintainability",
+		stack: ["Testing", "SEO", "CI/CD", "Code review"],
 		description:
-			"Performance work is treated as a systems problem: measure, isolate, reduce unnecessary work, then verify user-facing behavior.",
+			"I care about code that a team can keep shipping: sensible abstractions, useful tests, performance where it affects users, and review habits that reduce future cost.",
 		bullets: [
-			"Code-splits expensive surfaces.",
-			"Uses memoization when it protects real hot paths.",
-			"Honors accessibility and reduced-motion constraints.",
+			"Refactors complex codebases without breaking product flow.",
+			"Adds API and feature coverage where behavior matters.",
+			"Improves SEO and load time when the website depends on it.",
 		],
 		icon: "▤",
 		accent: "secondary",
 	},
 	{
-		id: "imall",
-		name: "imall_marketplace.exe",
-		process: "Public code sample",
-		role: "Multi-tenant commerce",
-		stack: ["Next.js", "Bun", "Elysia", "Drizzle", "PostgreSQL"],
+		id: "public-code",
+		name: "blob_api_repo.exe",
+		process: "Public GitHub sample",
+		role: "Multi-tenant filesystem",
+		stack: ["TypeScript", "Fastify", "Next.js", "PostgreSQL", "Drizzle"],
 		description:
-			"Marketplace project used as a practical architecture sample: tenant routing, catalog, inventory concepts, auctions, and typed boundaries.",
+			"Visible public architecture sample: a TypeScript monorepo with framework-agnostic domain logic, PostgreSQL metadata, pluggable blob stores, JWT auth, REST API, and Next.js UI.",
 		bullets: [
-			"Models tenant-aware product and commerce flows.",
-			"Connects real-time auction ideas to frontend state.",
-			"Shows how application structure maps to product behavior.",
+			"Separates core filesystem logic from storage adapters.",
+			"Uses Drizzle/PostgreSQL for metadata persistence.",
+			"Shows API, web, and package boundaries in one repo.",
 		],
 		icon: "▦",
 		accent: "primary",
@@ -159,11 +159,11 @@ export function ThreeShowcaseSection() {
 			code="OS_SHELL_01"
 			title={
 				<>
-					Systems work as a{" "}
-					<span className="text-primary text-glow">desktop interface</span>.
+					CV signals as an{" "}
+					<span className="text-primary text-glow">interactive workstation</span>.
 				</>
 			}
-			subtitle="Open the processes, drag windows, minimize them, and inspect the way I frame frontend systems work: runtime UI, real-time state, domain boundaries, WebGL readiness, and performance discipline."
+			subtitle="Open the processes and inspect CV work areas: advisor platforms, marketplace dashboards, integrations, product UI, delivery quality, and public code."
 			scanLabel="Interactive OS"
 		>
 			<ProjectsOS />
@@ -646,15 +646,6 @@ function accentClasses(accent: OsApp["accent"]) {
 			window: "border-secondary/35",
 			text: "text-secondary",
 			badge: "border-secondary/35 text-secondary",
-		};
-	}
-
-	if (accent === "magenta") {
-		return {
-			icon: "border-[#ff2bd6]/55 text-[#ff2bd6] group-hover:border-[#ff2bd6]",
-			window: "border-[#ff2bd6]/35",
-			text: "text-[#ff2bd6]",
-			badge: "border-[#ff2bd6]/35 text-[#ff2bd6]",
 		};
 	}
 
