@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
 const repoRoot = dirname(fileURLToPath(import.meta.url));
+const immutableAssetCache = "public, max-age=31536000, immutable";
 
 const nextConfig: NextConfig = {
 	async headers() {
@@ -20,12 +21,22 @@ const nextConfig: NextConfig = {
 					},
 				],
 			},
+			// Hashed Next chunks under /_next/static are immutable by default on Vercel.
+			// Public GLB assets are not, so pin the model cache explicitly.
 			{
 				source: "/models/:path*",
 				headers: [
 					{
 						key: "Cache-Control",
-						value: "public, max-age=31536000, immutable",
+						value: immutableAssetCache,
+					},
+					{
+						key: "CDN-Cache-Control",
+						value: immutableAssetCache,
+					},
+					{
+						key: "Vercel-CDN-Cache-Control",
+						value: immutableAssetCache,
 					},
 				],
 			},
