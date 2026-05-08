@@ -9,8 +9,11 @@ import { type DomainNode, domainEdges, domainNodes } from "@/features/three-lab/
 type ViewMode = "blueprint" | "solid" | "wireframe";
 type EdgePath = {
 	id: string;
+	linePoints: [number, number, number][];
 	points: THREE.Vector3[];
 };
+type MeshGeometryProp = React.ComponentProps<"mesh">["geometry"];
+type MeshMaterialProp = React.ComponentProps<"mesh">["material"];
 
 const modeLabels: Record<ViewMode, string> = {
 	blueprint: "Blueprint",
@@ -187,7 +190,7 @@ function DomainMap({
 	setActiveNodeId: (nodeId: string) => void;
 }) {
 	const nodeById = useMemo(() => new Map(domainNodes.map((node) => [node.id, node])), []);
-	const edgePaths = useMemo(
+	const edgePaths = useMemo<EdgePath[]>(
 		() =>
 			domainEdges.flatMap(([fromId, toId], index) => {
 				const fromNode = nodeById.get(fromId);
@@ -197,9 +200,13 @@ function DomainMap({
 
 				const from = new THREE.Vector3(...fromNode.position);
 				const to = new THREE.Vector3(...toNode.position);
+				const points = makeEdgePath(from, to, index);
 				return {
 					id: `${fromId}-${toId}`,
-					points: makeEdgePath(from, to, index),
+					linePoints: points.map(
+						(point) => [point.x, point.y, point.z] as [number, number, number],
+					),
+					points,
 				};
 			}),
 		[nodeById],
@@ -212,7 +219,7 @@ function DomainMap({
 			{edgePaths.map((edge, index) => (
 				<Line
 					key={edge.id}
-					points={edge.points}
+					points={edge.linePoints}
 					color={index % 3 === 0 ? "#9eff4f" : "#39d7ff"}
 					lineWidth={1.35}
 					transparent
@@ -284,8 +291,8 @@ function DomainNodeMesh({
 		<group position={node.position}>
 			{/* biome-ignore lint/a11y/noStaticElementInteractions: R3F mesh pointer handlers are canvas interactions, not DOM controls. */}
 			<mesh
-				geometry={geometry}
-				material={material}
+				geometry={geometry as unknown as MeshGeometryProp}
+				material={material as unknown as MeshMaterialProp}
 				scale={active ? 1.45 : hovered ? 1.22 : 1}
 				onClick={() => setActiveNodeId(node.id)}
 				onPointerEnter={() => setHovered(true)}
@@ -323,6 +330,7 @@ function getNodeColor(kind: DomainNode["kind"]) {
 
 function EventPulses({ paths }: { paths: EdgePath[] }) {
 	const refs = useRef<THREE.Mesh[]>([]);
+	const elapsedRef = useRef(0);
 	const geometry = useMemo(() => new THREE.SphereGeometry(0.045, 14, 14), []);
 	const material = useMemo(
 		() =>
@@ -334,8 +342,9 @@ function EventPulses({ paths }: { paths: EdgePath[] }) {
 		[],
 	);
 
-	useFrame(({ clock }) => {
-		const elapsed = clock.elapsedTime;
+	useFrame((_, delta) => {
+		elapsedRef.current += delta;
+		const elapsed = elapsedRef.current;
 		refs.current.forEach((mesh, index) => {
 			const path = paths[index % paths.length]?.points;
 			if (!path) return;
@@ -362,10 +371,10 @@ function EventPulses({ paths }: { paths: EdgePath[] }) {
 					<mesh
 						key={`${path.id}-${offset}`}
 						ref={(mesh) => {
-							if (mesh) refs.current[pathIndex * 2 + offset] = mesh;
+							if (mesh) refs.current[pathIndex * 2 + offset] = mesh as unknown as THREE.Mesh;
 						}}
-						geometry={geometry}
-						material={material}
+						geometry={geometry as unknown as MeshGeometryProp}
+						material={material as unknown as MeshMaterialProp}
 					/>
 				)),
 			)}

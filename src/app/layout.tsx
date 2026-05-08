@@ -90,8 +90,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className="h-full antialiased">
-			<body className="min-h-full">
+		<html
+			lang="en"
+			className="h-full antialiased"
+			style={{ backgroundColor: "#070a0f", color: "#f8fafc" }}
+		>
+			<body className="min-h-full" style={{ backgroundColor: "#070a0f", color: "#f8fafc" }}>
 				<script
 					type="application/ld+json"
 					suppressHydrationWarning

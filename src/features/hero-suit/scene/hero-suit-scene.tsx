@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { SuitLoader } from "@/features/hero-suit/components/suit-loader";
 import { useReducedMotionPreference } from "@/hooks/use-reduced-motion-preference";
 
-const SUIT_MODEL_URL = "/models/rust_space_suit.glb";
+const SUIT_MODEL_URL = "/models/rust_space_suit.fd010165.glb";
 
 export function HeroSuitScene() {
 	const reducedMotion = useReducedMotionPreference();
@@ -33,6 +33,7 @@ export function HeroSuitScene() {
 					fov: compact ? 40 : 36,
 				}}
 				className="absolute inset-0 h-full w-full"
+				style={{ background: "transparent" }}
 				dpr={[1, 1.5]}
 				frameloop={reducedMotion ? "demand" : "always"}
 				gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
@@ -67,28 +68,30 @@ export function HeroSuitScene() {
 function SuitCanvasLoader() {
 	return (
 		<Html center>
-			<SuitLoader label="GLB sync" className="scale-90" />
+			<SuitLoader label="GLB sync" className="translate-x-12.5 -translate-y-5 scale-90" />
 		</Html>
 	);
 }
 
 function SuitRig({ compact, reducedMotion }: { compact: boolean; reducedMotion: boolean }) {
 	const groupRef = useRef<THREE.Group>(null);
+	const elapsedRef = useRef(0);
 	const { scene } = useGLTF(SUIT_MODEL_URL);
 	const scale = compact ? 1.12 : 1.36;
 
 	useEffect(() => {
 		scene.traverse((object) => {
 			if ("isMesh" in object && object.isMesh) {
-				const mesh = object as THREE.Mesh;
+				const mesh = object;
 				mesh.frustumCulled = false;
 			}
 		});
 	}, [scene]);
 
-	useFrame(({ clock, pointer }) => {
+	useFrame(({ pointer }, delta) => {
 		if (reducedMotion || !groupRef.current) return;
-		const elapsed = clock.elapsedTime;
+		elapsedRef.current += delta;
+		const elapsed = elapsedRef.current;
 		groupRef.current.rotation.y = pointer.x * 0.1 + Math.sin(elapsed * 0.24) * 0.035;
 		groupRef.current.rotation.x = pointer.y * -0.055 + Math.sin(elapsed * 0.31) * 0.018;
 		groupRef.current.position.y = Math.sin(elapsed * 0.48) * 0.035;
@@ -121,8 +124,8 @@ function useCompactViewport() {
 
 function SuitFallback({ label }: { label: string }) {
 	return (
-		<div className="grid h-[430px] place-items-center sm:h-[540px] lg:h-[640px]">
-			<SuitLoader label={label} />
+		<div className="grid h-107.5 place-items-center sm:h-[540px] lg:h-[640px]">
+			<SuitLoader label={label} className="translate-x-12.5 -translate-y-5" />
 		</div>
 	);
 }

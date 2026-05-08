@@ -12,7 +12,7 @@ export function ScanLabel({
 	return (
 		<span
 			className={cn(
-				"scan-label pointer-events-none absolute right-3 top-3 z-20 max-w-[14rem] border border-secondary/55 bg-[#050a12]/88 px-2.5 py-1.5 font-mono text-[10px] uppercase leading-4 tracking-[0.14em] text-secondary shadow-[0_0_18px_rgb(57_215_255_/_0.14)] backdrop-blur-sm",
+				"scan-label pointer-events-none absolute right-3 top-3 z-20 max-w-56 border border-secondary/55 bg-[#050a12]/88 px-2.5 py-1.5 font-mono text-[10px] uppercase leading-4 tracking-[0.14em] text-secondary shadow-[0_0_18px_rgb(57_215_255_/_0.14)] backdrop-blur-sm",
 				className,
 			)}
 		>

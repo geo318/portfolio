@@ -40,16 +40,22 @@ function useMonitorEnabled() {
 
 	useEffect(() => {
 		const query = window.matchMedia("(min-width: 768px)");
+		let active = false;
 
 		const sync = () => {
-			setEnabled(query.matches && document.visibilityState === "visible");
+			setEnabled(active && query.matches && document.visibilityState === "visible");
 		};
 
-		sync();
+		const timer = window.setTimeout(() => {
+			active = true;
+			sync();
+		}, 12000);
+
 		query.addEventListener("change", sync);
 		document.addEventListener("visibilitychange", sync);
 
 		return () => {
+			window.clearTimeout(timer);
 			query.removeEventListener("change", sync);
 			document.removeEventListener("visibilitychange", sync);
 		};
