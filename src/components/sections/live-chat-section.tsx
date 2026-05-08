@@ -1,7 +1,5 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
 import { LoaderCircle, Send, Square } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ScanLabel } from "@/components/layout/scan-label";
@@ -10,16 +8,19 @@ import { chatSuggestions } from "@/content/chat-profile";
 import { profile } from "@/content/portfolio";
 import { cn } from "@/lib/utils";
 
-const initialMessages: UIMessage[] = [
+type ChatStatus = "ready" | "submitted" | "streaming";
+
+type ChatMessage = {
+	id: string;
+	role: "user" | "assistant";
+	text: string;
+};
+
+const initialMessages: ChatMessage[] = [
 	{
 		id: "boot",
 		role: "assistant",
-		parts: [
-			{
-				type: "text",
-				text: "Ask me about my CV, Alpheya, Proxied, React/Next.js, backend/API work, public GitHub repos, or contact details.",
-			},
-		],
+		text: "Ask me about my CV, Alpheya, Proxied, React/Next.js, backend/API work, public GitHub repos, or contact details.",
 	},
 ];
 
@@ -29,19 +30,12 @@ function normalizePrompt(value: string) {
 	return value.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-function createTextMessage(role: "user" | "assistant", text: string): UIMessage {
+function createTextMessage(role: ChatMessage["role"], text: string): ChatMessage {
 	return {
 		id: `${role}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
 		role,
-		parts: [{ type: "text", text }],
+		text,
 	};
-}
-
-function getMessageText(message: UIMessage) {
-	return message.parts
-		.filter((part) => part.type === "text")
-		.map((part) => part.text)
-		.join("");
 }
 
 function trimCache(cache: Map<string, string>) {
@@ -53,27 +47,28 @@ function trimCache(cache: Map<string, string>) {
 }
 
 export function LiveChatSection() {
-	const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
 	const [input, setInput] = useState("");
-	const { messages, sendMessage, setMessages, status, error, stop } = useChat({
-		transport,
-		messages: initialMessages,
-		experimental_throttle: 24,
-	});
+	const [messages, setMessages] = useState(initialMessages);
+	const [status, setStatus] = useState<ChatStatus>("ready");
+	const [error, setError] = useState<string | null>(null);
 	const busy = status === "submitted" || status === "streaming";
 	const waitingForFirstToken = status === "submitted";
 	const canSubmit = input.trim().length > 0 && !busy;
 	const chatPanelRef = useRef<HTMLDivElement>(null);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const messagesRef = useRef(initialMessages);
 	const responseCacheRef = useRef(new Map<string, string>());
+	const abortControllerRef = useRef<AbortController | null>(null);
 	const chatHasActivityRef = useRef(false);
-	const lastSubmittedPromptRef = useRef<string | null>(null);
-	const lastCachedAssistantIdRef = useRef<string | null>(null);
 	const lastViewportScrollAtRef = useRef(0);
 	const latestMessageText = useMemo(
-		() => messages.map((message) => getMessageText(message)).join("\n"),
+		() => messages.map((message) => message.text).join("\n"),
 		[messages],
 	);
+
+	useEffect(() => {
+		messagesRef.current = messages;
+	}, [messages]);
 
 	useEffect(() => {
 		if (!chatHasActivityRef.current || latestMessageText.length === 0) return;
@@ -94,33 +89,6 @@ export function LiveChatSection() {
 			}
 		}
 	}, [latestMessageText, status]);
-
-	useEffect(() => {
-		if (status !== "ready") return;
-
-		const cacheKey = lastSubmittedPromptRef.current;
-		if (!cacheKey) return;
-
-		const assistantMessage = [...messages]
-			.reverse()
-			.find((message) => message.role === "assistant");
-
-		if (
-			!assistantMessage ||
-			assistantMessage.id === "boot" ||
-			assistantMessage.id === lastCachedAssistantIdRef.current
-		) {
-			return;
-		}
-
-		const assistantText = getMessageText(assistantMessage).trim();
-		if (!assistantText) return;
-
-		responseCacheRef.current.set(cacheKey, assistantText);
-		trimCache(responseCacheRef.current);
-		lastCachedAssistantIdRef.current = assistantMessage.id;
-		lastSubmittedPromptRef.current = null;
-	}, [messages, status]);
 
 	const sendCachedOrNetwork = async (text: string) => {
 		if (!text || busy) return;
@@ -147,8 +115,79 @@ export function LiveChatSection() {
 			return;
 		}
 
-		lastSubmittedPromptRef.current = cacheKey;
-		await sendMessage({ text });
+		const userMessage = createTextMessage("user", text);
+		const assistantMessage = createTextMessage("assistant", "");
+		const requestMessages = [...messagesRef.current, userMessage]
+			.filter((message) => message.id !== "boot")
+			.slice(-10);
+		const abortController = new AbortController();
+		let streamedText = "";
+
+		abortControllerRef.current = abortController;
+		setError(null);
+		setStatus("submitted");
+		setMessages((currentMessages) => [...currentMessages, userMessage, assistantMessage]);
+
+		try {
+			const response = await fetch("/api/chat", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ messages: requestMessages }),
+				signal: abortController.signal,
+			});
+
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(errorText || `Chat request failed with ${response.status}.`);
+			}
+
+			if (!response.body) {
+				throw new Error("Chat response did not include a stream.");
+			}
+
+			setStatus("streaming");
+			const reader = response.body.getReader();
+			const decoder = new TextDecoder();
+
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+
+				streamedText += decoder.decode(value, { stream: true });
+				setMessages((currentMessages) =>
+					currentMessages.map((message) =>
+						message.id === assistantMessage.id ? { ...message, text: streamedText } : message,
+					),
+				);
+			}
+
+			streamedText += decoder.decode();
+
+			if (streamedText.trim()) {
+				responseCacheRef.current.set(cacheKey, streamedText.trim());
+				trimCache(responseCacheRef.current);
+			}
+		} catch (requestError) {
+			if (requestError instanceof DOMException && requestError.name === "AbortError") {
+				return;
+			}
+
+			const message = requestError instanceof Error ? requestError.message : "Chat request failed.";
+			setError(message);
+			setMessages((currentMessages) =>
+				currentMessages.filter(
+					(message) => message.id !== assistantMessage.id || message.text.trim().length > 0,
+				),
+			);
+		} finally {
+			abortControllerRef.current = null;
+			setStatus("ready");
+		}
+	};
+
+	const stop = () => {
+		abortControllerRef.current?.abort();
+		setStatus("ready");
 	};
 
 	const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -176,7 +215,7 @@ export function LiveChatSection() {
 			}
 			subtitle="The server prompt answers in my voice using CV, LinkedIn handle, GitHub repos, projects, stack, contact links, and claim boundaries."
 			scanLabel="AI SDK Chat"
-			scanDetail="useChat + DefaultChatTransport send UI messages to POST /api/chat."
+			scanDetail="Client fetch streams plain text from POST /api/chat; AI SDK stays server-side."
 		>
 			<div
 				ref={chatPanelRef}
@@ -250,8 +289,8 @@ export function LiveChatSection() {
 									Check <span className="text-foreground">CHAT_API_KEY</span> and{" "}
 									<span className="text-foreground">CHAT_MODEL</span>. If those are correct, check
 									provider quota or rate limits.
-									{error.message ? (
-										<span className="mt-2 block text-[#ffb4c4]">{error.message.slice(0, 180)}</span>
+									{error ? (
+										<span className="mt-2 block text-[#ffb4c4]">{error.slice(0, 180)}</span>
 									) : null}
 								</div>
 							) : null}
@@ -320,12 +359,8 @@ function ThinkingBubble() {
 	);
 }
 
-function ChatBubble({ message }: { message: UIMessage }) {
+function ChatBubble({ message }: { message: ChatMessage }) {
 	const mine = message.role === "user";
-	const text = message.parts
-		.filter((part) => part.type === "text")
-		.map((part) => part.text)
-		.join("");
 
 	return (
 		<div className={cn("flex", mine ? "justify-end" : "justify-start")}>
@@ -340,7 +375,7 @@ function ChatBubble({ message }: { message: UIMessage }) {
 				<div className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em]">
 					{mine ? "Visitor" : "Giorgi"}
 				</div>
-				<p className="whitespace-pre-wrap">{text}</p>
+				<p className="whitespace-pre-wrap">{message.text}</p>
 			</div>
 		</div>
 	);

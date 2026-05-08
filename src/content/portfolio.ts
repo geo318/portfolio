@@ -1,47 +1,54 @@
-import { z } from "zod";
-
-const taggedCardSchema = z.object({
-	title: z.string(),
-	copy: z.string(),
-	tags: z.array(z.string()).default([]),
-});
-
 export type LinkItem = {
 	label: string;
 	href: string;
 	disabled?: boolean;
 };
-export type TaggedCard = z.infer<typeof taggedCardSchema>;
+export type TaggedCard = {
+	title: string;
+	copy: string;
+	tags: string[];
+};
 
-export const profile = z
-	.object({
-		name: z.string(),
-		role: z.string(),
-		location: z.string(),
-		headline: z.string(),
-		subcopy: z.string(),
-		positioning: z.string(),
-		email: z.string(),
-		phone: z.string(),
-		github: z.string().url(),
-		linkedin: z.string().url(),
-		cvHref: z.string(),
-	})
-	.parse({
-		name: "Giorgi Lomidze",
-		role: "Full-stack Software Engineer",
-		location: "Tbilisi, Georgia",
-		headline: "Full-stack engineer building reliable product interfaces and integrations.",
-		subcopy:
-			"6+ years with TypeScript, React, Next.js, Node.js, SQL, GraphQL, ConnectRPC, and API integrations.",
-		positioning:
-			"Frontend-heavy full-stack work across product UI, backend services, integrations, typed boundaries, performance, and practical delivery.",
-		email: "geo.lomidze@gmail.com",
-		phone: "+995 595 350 320",
-		github: "https://github.com/geo318",
-		linkedin: "https://www.linkedin.com/in/geo318/",
-		cvHref: "/Giorgi-Lomidze-CV.pdf",
-	});
+type Profile = {
+	name: string;
+	role: string;
+	location: string;
+	headline: string;
+	subcopy: string;
+	positioning: string;
+	email: string;
+	phone: string;
+	github: string;
+	linkedin: string;
+	cvHref: string;
+};
+
+type SkillGroup = {
+	category: string;
+	items: string[];
+};
+
+type Project = TaggedCard & {
+	company?: string;
+	role?: string;
+	github?: string;
+};
+
+export const profile = {
+	name: "Giorgi Lomidze",
+	role: "Full-stack Software Engineer",
+	location: "Tbilisi, Georgia",
+	headline: "Full-stack engineer building reliable product interfaces and integrations.",
+	subcopy:
+		"6+ years with TypeScript, React, Next.js, Node.js, SQL, GraphQL, ConnectRPC, and API integrations.",
+	positioning:
+		"Frontend-heavy full-stack work across product UI, backend services, integrations, typed boundaries, performance, and practical delivery.",
+	email: "geo.lomidze@gmail.com",
+	phone: "+995 595 350 320",
+	github: "https://github.com/geo318",
+	linkedin: "https://www.linkedin.com/in/geo318/",
+	cvHref: "/Giorgi-Lomidze-CV.pdf",
+} satisfies Profile;
 
 export const navLinks: LinkItem[] = [
 	{ label: "Stack", href: "#stack" },
@@ -68,7 +75,7 @@ export const heroStats = [
 	"SQL / Docker",
 ];
 
-export const fitCards = z.array(taggedCardSchema).parse([
+export const fitCards = [
 	{
 		title: "Frontend-heavy full-stack delivery",
 		copy: "Strongest where product UI meets backend reality: forms, dashboards, data flows, service integration, SSR/RSC boundaries, and maintainable code.",
@@ -99,70 +106,63 @@ export const fitCards = z.array(taggedCardSchema).parse([
 		copy: "I mentor developers, review code, help define standards, and prefer decisions that reduce risk without adding ceremony.",
 		tags: ["Code review", "Mentoring", "Standards"],
 	},
-]);
+] satisfies TaggedCard[];
 
-export const skillMatrix = z
-	.array(
-		z.object({
-			category: z.string(),
-			items: z.array(z.string()),
-		}),
-	)
-	.parse([
-		{
-			category: "Languages",
-			items: ["TypeScript", "JavaScript", "PHP", "SQL", "HTML", "CSS"],
-		},
-		{
-			category: "Frontend",
-			items: [
-				"React",
-				"Next.js",
-				"App Router",
-				"React Query",
-				"Redux",
-				"Zustand",
-				"Jotai",
-				"React Hook Form",
-				"Tailwind CSS",
-				"shadcn/ui",
-				"Storybook",
-			],
-		},
-		{
-			category: "Backend / API",
-			items: [
-				"Node.js",
-				"Express",
-				"NestJS",
-				"Laravel",
-				"REST APIs",
-				"GraphQL",
-				"ConnectRPC",
-				"TRPC",
-				"Zod",
-			],
-		},
-		{
-			category: "Data / Platform",
-			items: [
-				"PostgreSQL",
-				"MySQL",
-				"SQLite",
-				"MongoDB",
-				"Drizzle ORM",
-				"Prisma",
-				"Sequelize",
-				"Mongoose",
-				"Docker",
-				"CI/CD",
-				"Linux",
-				"Nginx",
-				"Coolify",
-				"Turborepo",
-			],
-		},
-	]);
+export const skillMatrix = [
+	{
+		category: "Languages",
+		items: ["TypeScript", "JavaScript", "PHP", "SQL", "HTML", "CSS"],
+	},
+	{
+		category: "Frontend",
+		items: [
+			"React",
+			"Next.js",
+			"App Router",
+			"React Query",
+			"Redux",
+			"Zustand",
+			"Jotai",
+			"React Hook Form",
+			"Tailwind CSS",
+			"shadcn/ui",
+			"Storybook",
+		],
+	},
+	{
+		category: "Backend / API",
+		items: [
+			"Node.js",
+			"Express",
+			"NestJS",
+			"Laravel",
+			"REST APIs",
+			"GraphQL",
+			"ConnectRPC",
+			"TRPC",
+			"Zod",
+		],
+	},
+	{
+		category: "Data / Platform",
+		items: [
+			"PostgreSQL",
+			"MySQL",
+			"SQLite",
+			"MongoDB",
+			"Drizzle ORM",
+			"Prisma",
+			"Sequelize",
+			"Mongoose",
+			"Docker",
+			"CI/CD",
+			"Linux",
+			"Nginx",
+			"Coolify",
+			"Turborepo",
+		],
+	},
+] satisfies SkillGroup[];
 
 export const architectureLayers = [
 	{
@@ -207,60 +207,52 @@ export const architectureLayers = [
 	},
 ];
 
-export const projects = z
-	.array(
-		taggedCardSchema.extend({
-			company: z.string().optional(),
-			role: z.string().optional(),
-			github: z.string().url().optional(),
-		}),
-	)
-	.parse([
-		{
-			title: "Advisor Desktop / Wealth Platform Integrations",
-			company: "Alpheya",
-			role: "Senior Full-stack Engineer",
-			tags: ["Next.js", "TypeScript", "React", "GraphQL", "ConnectRPC", "Buf", "Zod", "Turborepo"],
-			copy: "Advisor-facing financial platform work across frontend architecture, service integration, and migration from GraphQL patterns to RPC services.",
-		},
-		{
-			title: "Marketplace for Mobile Proxies",
-			company: "Proxied",
-			role: "Lead Full-stack Developer",
-			tags: ["Next.js", "GraphQL", "Tailwind CSS", "Zod", "shadcn/ui", "Docker"],
-			copy: "Led three developers and shipped buyer, hoster, and staff dashboards for a mobile proxy marketplace: onboarding, payouts, ticket triage, SEO, and backend tools.",
-			github: "https://proxied.com",
-		},
-		{
-			title: "Connect",
-			company: "DHC",
-			role: "Full-stack Developer",
-			tags: ["Next.js", "RSC", "TRPC", "React Query", "Drizzle", "Matrix.js", "Zod"],
-			copy: "Platform for doctors supporting people with disabilities. Integrated Matrix.js communication/file sharing, built TRPC endpoints, and created responsive chat UI.",
-		},
-		{
-			title: "MoneyAlive",
-			company: "Redberry",
-			role: "Full-stack Developer",
-			tags: ["Laravel", "PEST", "React", "PostgreSQL", "REST API"],
-			copy: "Built a REST API bridge to a JavaScript SDK, covered behavior with PEST tests, created a React testing UI, and reviewed code.",
-		},
-		{
-			title: "Skippit",
-			company: "Skippit",
-			role: "Full-stack Developer",
-			tags: ["Laravel", "MySQL", "Next.js", "Tailwind", "Chart.js"],
-			copy: "Worked on a vertical ERP SaaS: backend/frontend development, reusable React components, performance-minded refactoring, and code reviews.",
-		},
-		{
-			title: "iMall - Multi-tenant Marketplace",
-			company: "Personal Project",
-			role: "Full-stack Engineer",
-			tags: ["Next.js", "TypeScript", "Tailwind CSS", "SQL", "Auth", "Multi-tenant"],
-			copy: "Marketplace focused on tenant-aware routing, catalog/listing flows, filters, vendor/admin surfaces, SEO pages, and modular architecture.",
-			github: "https://imall.ge",
-		},
-	]);
+export const projects = [
+	{
+		title: "Advisor Desktop / Wealth Platform Integrations",
+		company: "Alpheya",
+		role: "Senior Full-stack Engineer",
+		tags: ["Next.js", "TypeScript", "React", "GraphQL", "ConnectRPC", "Buf", "Zod", "Turborepo"],
+		copy: "Advisor-facing financial platform work across frontend architecture, service integration, and migration from GraphQL patterns to RPC services.",
+	},
+	{
+		title: "Marketplace for Mobile Proxies",
+		company: "Proxied",
+		role: "Lead Full-stack Developer",
+		tags: ["Next.js", "GraphQL", "Tailwind CSS", "Zod", "shadcn/ui", "Docker"],
+		copy: "Led three developers and shipped buyer, hoster, and staff dashboards for a mobile proxy marketplace: onboarding, payouts, ticket triage, SEO, and backend tools.",
+		github: "https://proxied.com",
+	},
+	{
+		title: "Connect",
+		company: "DHC",
+		role: "Full-stack Developer",
+		tags: ["Next.js", "RSC", "TRPC", "React Query", "Drizzle", "Matrix.js", "Zod"],
+		copy: "Platform for doctors supporting people with disabilities. Integrated Matrix.js communication/file sharing, built TRPC endpoints, and created responsive chat UI.",
+	},
+	{
+		title: "MoneyAlive",
+		company: "Redberry",
+		role: "Full-stack Developer",
+		tags: ["Laravel", "PEST", "React", "PostgreSQL", "REST API"],
+		copy: "Built a REST API bridge to a JavaScript SDK, covered behavior with PEST tests, created a React testing UI, and reviewed code.",
+	},
+	{
+		title: "Skippit",
+		company: "Skippit",
+		role: "Full-stack Developer",
+		tags: ["Laravel", "MySQL", "Next.js", "Tailwind", "Chart.js"],
+		copy: "Worked on a vertical ERP SaaS: backend/frontend development, reusable React components, performance-minded refactoring, and code reviews.",
+	},
+	{
+		title: "iMall - Multi-tenant Marketplace",
+		company: "Personal Project",
+		role: "Full-stack Engineer",
+		tags: ["Next.js", "TypeScript", "Tailwind CSS", "SQL", "Auth", "Multi-tenant"],
+		copy: "Marketplace focused on tenant-aware routing, catalog/listing flows, filters, vendor/admin surfaces, SEO pages, and modular architecture.",
+		github: "https://imall.ge",
+	},
+] satisfies Project[];
 
 export const experience = [
 	{
