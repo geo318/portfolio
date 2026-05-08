@@ -22,6 +22,14 @@ export function PortfolioFrame({ children }: { children: React.ReactNode }) {
 						<span className="text-primary">GL_</span> Giorgi Lomidze / Portfolio
 					</span>
 					<span>CV-backed copy / Next.js, TypeScript, React, and product systems.</span>
+					<a
+						href="https://github.com/geo318/portfolio"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="transition-colors hover:text-primary"
+					>
+						Source / github.com/geo318/portfolio
+					</a>
 				</div>
 			</footer>
 		</main>
