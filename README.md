@@ -43,7 +43,7 @@ The main goal is to communicate engineering credibility quickly:
 - Live performance monitor overlay.
 - Architecture scan mode with contextual component labels.
 - Streaming AI chat section backed by the Vercel AI SDK and Google Gemini.
-- Downloadable CV from `public/Giorgi-Lomidze-CV.pdf`.
+- Downloadable CV from `public/GL.pdf`.
 - Dynamic Open Graph image, sitemap, robots file, web app manifest, and JSON-LD profile metadata.
 - Vercel-friendly cache headers for immutable 3D model assets.
 
@@ -82,7 +82,7 @@ Heavy browser-only pieces are isolated behind client components and dynamic impo
 ```text
 .
 |-- public/
-|   |-- Giorgi-Lomidze-CV.pdf
+|   |-- GL.pdf
 |   `-- models/
 |       `-- rust_space_suit.fd010165.glb
 |-- src/
@@ -302,7 +302,7 @@ Recommended Vercel configuration:
 After deploy, verify:
 
 - `/` renders without client errors.
-- `/Giorgi-Lomidze-CV.pdf` downloads.
+- `/GL.pdf` downloads.
 - `/models/rust_space_suit.fd010165.glb` returns long-lived cache headers.
 - `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest`, and `/opengraph-image` are reachable.
 - Chat streams when provider credentials are configured.

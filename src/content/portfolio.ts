@@ -47,7 +47,7 @@ export const profile = {
 	phone: "+995 595 350 320",
 	github: "https://github.com/geo318",
 	linkedin: "https://www.linkedin.com/in/geo318/",
-	cvHref: "/Giorgi-Lomidze-CV.pdf",
+	cvHref: "/GL.pdf",
 } satisfies Profile;
 
 export const navLinks: LinkItem[] = [

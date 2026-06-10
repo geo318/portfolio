@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
 				],
 			},
 			{
-				source: "/Giorgi-Lomidze-CV.pdf",
+				source: "/GL.pdf",
 				headers: [
 					{
 						key: "Cache-Control",
